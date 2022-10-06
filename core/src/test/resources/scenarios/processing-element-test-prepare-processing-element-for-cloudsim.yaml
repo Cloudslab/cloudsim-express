@@ -1,0 +1,11 @@
+# Schemas for any element should be according to `simulation-elements.yaml` file in the low-code simulator.
+ProcessingElement: &ProcessingElement
+  variant:
+    className: "org.cloudbus.cloudsim.Pe"
+    copies: 5
+  id: 0
+  processingElementProvisioner:
+    variant:
+      className: "org.cloudbus.cloudsim.provisioners.PeProvisionerSimple"
+      copies: 1
+    mips: 1000

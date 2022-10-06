@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ CloudSim Express
+  ~ Copyright (C) 2022  CloudsLab
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.cloudbus.cloudsim.cloudsim-express</groupId>
+    <artifactId>cloudsim-express-parent</artifactId>
+    <version>0.1-SNAPSHOT</version>
+
+    <packaging>pom</packaging>
+
+    <name>CloudSim Express: Parent</name>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <artifactId>log4j-api</artifactId>
+                <groupId>org.apache.logging.log4j</groupId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>log4j-core</artifactId>
+                <groupId>org.apache.logging.log4j</groupId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cloudbus.cloudsim</groupId>
+                <artifactId>cloudsim-toolkit</artifactId>
+                <version>${cloudsim-toolkit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cloudbus.cloudsim</groupId>
+                <artifactId>cloudsim-examples</artifactId>
+                <version>${cloudsim-toolkit.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.cloudbus.cloudsim.cloudsim-express</groupId>
+                <artifactId>cloudsim-express-extensions</artifactId>
+                <version>${cloudsim-express-extensions.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <version>${org.springframework.boot.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>spring-data-jpa</artifactId>
+                <groupId>org.springframework.data</groupId>
+                <version>${spring-data-jpa.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>jackson-databind-nullable</artifactId>
+                <groupId>org.openapitools</groupId>
+                <version>${jackson-databind-nullable.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>swagger-annotations</artifactId>
+                <groupId>io.swagger.core.v3</groupId>
+                <version>${swagger-annotations.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>spring-boot-starter-validation</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <version>${spring-boot-starter-validation.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>swagger-parser-v3</artifactId>
+                <groupId>io.swagger.parser.v3</groupId>
+                <version>${swagger-parser-v3.version}</version>
+            </dependency>
+            <dependency>
+                <artifactId>reflections</artifactId>
+                <groupId>org.reflections</groupId>
+                <version>${reflections.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <version>${maven-install-plugin.version}</version>
+                <inherited>false</inherited>
+                <executions>
+                    <execution>
+                        <configuration>
+                            <groupId>org.cloudbus.cloudsim</groupId>
+                            <artifactId>cloudsim-toolkit</artifactId>
+                            <version>${cloudsim-toolkit.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${cloudsim-toolkit-jar}</file>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <id>cloudsim-toolkit</id>
+                        <phase>initialize</phase>
+                    </execution>
+                    <execution>
+                        <configuration>
+                            <groupId>org.cloudbus.cloudsim</groupId>
+                            <artifactId>cloudsim-examples</artifactId>
+                            <version>${cloudsim-toolkit.version}</version>
+                            <packaging>jar</packaging>
+                            <file>${cloudsim-toolkit-examples-jar}</file>
+                        </configuration>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <id>cloudsim-toolkit-examples</id>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <properties>
+        <cloudsim-toolkit.version>6.0-pre</cloudsim-toolkit.version>
+        <cloudsim-toolkit-jar>../external-dependencies/cloudsim/cloudsim-6.0-pre.jar</cloudsim-toolkit-jar>
+        <cloudsim-toolkit-examples-jar>../external-dependencies/cloudsim/cloudsim-examples-6.0-pre.jar
+        </cloudsim-toolkit-examples-jar>
+
+        <cloudsim-express-extensions.version>0.1-SNAPSHOT
+        </cloudsim-express-extensions.version>
+
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+
+        <log4j.version>2.17.1</log4j.version>
+
+        <org.springframework.boot.version>2.5.12</org.springframework.boot.version>
+        <spring-data-jpa.version>2.4.6</spring-data-jpa.version>
+        <jackson-databind-nullable.version>0.2.1</jackson-databind-nullable.version>
+        <swagger-annotations.version>2.1.13</swagger-annotations.version>
+        <spring-boot-starter-validation.version>2.4.4</spring-boot-starter-validation.version>
+        <swagger-parser-v3.version>2.0.30</swagger-parser-v3.version>
+        <reflections.version>0.10.2</reflections.version>
+
+        <maven-install-plugin.version>2.5.2</maven-install-plugin.version>
+    </properties>
+</project>

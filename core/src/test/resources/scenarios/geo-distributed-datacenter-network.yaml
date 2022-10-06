@@ -1,0 +1,97 @@
+# Schemas for any element should be defined in the `simulation-elements.yaml` file.
+ProcessingElement: &ProcessingElement
+  variant:
+    className: "org.cloudbus.cloudsim.Pe"
+    copies: 64
+  id: -1 # -1 means auto increment
+  processingElementProvisioner:
+    variant:
+      className: "org.cloudbus.cloudsim.provisioners.PeProvisionerSimple"
+    mips: 2660
+ProcessingElementList: &ProcessingElementList
+  - <<: *ProcessingElement
+    variant:
+      className: "org.cloudbus.cloudsim.Pe"
+      copies: 5
+Host: &Host
+  variant:
+    className: "org.cloudbus.cloudsim.Host"
+    copies: 1
+  id: -1
+  ramProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.RamProvisionerSimple"
+    extensionProperties:
+      - key: "ram"
+        value: "515639"
+  bwProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.BwProvisionerSimple"
+    extensionProperties:
+      - key: "bw"
+        value: "100000000"
+  vmScheduler:
+    className: "org.cloudbus.cloudsim.VmSchedulerTimeShared"
+  storage: 1000000
+  processingElementList: *ProcessingElementList
+HostList: &HostList
+  - <<: *Host
+    variant:
+      className: "org.cloudbus.cloudsim.Host"
+      copies: 10
+Characteristics: &Characteristics
+  arch: "x86"
+  os: "Linux"
+  vmm: "Xen"
+  timeZone: 10.0
+  cost: 3.0
+  costPerMemory: 0.05
+  costPerStorage: 0.01
+  costPerBandwidth: 0.0
+  hostList: *HostList
+Datacenter: &Datacenter
+  variant:
+    className: "org.cloudbus.cloudsim.Datacenter"
+  characteristics: *Characteristics
+  vmAllocationPolicy:
+    className: "org.cloudbus.cloudsim.VmAllocationPolicySimple"
+  storage: ""
+  schedulingInterval: 0
+  name: "regional-datacenter"
+Zone: &Zone
+  name: "default zone"
+  datacenter: *Datacenter
+  broker:
+    variant:
+      className: "org.cloudbus.cloudsim.DatacenterBroker"
+    name: "RegionalBroker"
+  workloadGenerator:
+    variant:
+      className: "org.crunchycookie.research.distributed.computing.cloudsim.workload.impl.DummyWorkloadGenerator"
+      extensionProperties:
+        - key: "workloadPercentage"
+          value: "11"
+        - key: "isRandomPercentage"
+          value: "true"
+        - key: "dataFolder"
+          value: "../external-dependencies/data/workload/bitbrain-dataset/fastStorage"
+GlobalDatacenterNetwork:
+  zoneCount: 1
+  interZoneNetworkDescriptionFilePath: "../external-dependencies/data/network/aws-geo-distributed-datacenter-inter-network-data.csv"
+  zones:
+    - <<: *Zone
+      name: "REGIONAL_ZONE_VIRGINIA"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_CALIFORNIA"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_OREGON"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_IRELAND"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_FRANKFURT"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_SINGAPORE"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_TOKYO"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_SYDNEY"
+    - <<: *Zone
+      name: "REGIONAL_ZONE_SAOPAULO"

@@ -11,7 +11,7 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
+# *.jar - There are external dependencies we want to pack
 *.war
 *.nar
 *.ear
@@ -19,5 +19,29 @@
 *.tar.gz
 *.rar
 
+# Intellij files
+*.iml
+
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+# intellij folders
+.idea
+
+# build outputs
+target
+
+# datasets
+bitbrain-dataset
+
+# cloudsim results
+output
+
+#macos
+*.DS_Store
+
+# Generated sources
+gen
+
+# Release artifacts
+release-artifacts
