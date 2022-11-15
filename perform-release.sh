@@ -20,35 +20,35 @@
 # Written and tested for linux
 
 
-RELEASE_VERSION=0.3
+RELEASE_VERSION=0.1
 
 rm -rf release-artifacts
 mkdir release-artifacts
 cd release-artifacts
 
-RELEASE_FOLDER=low-code-simulation-tool-$RELEASE_VERSION
+RELEASE_FOLDER=cloudsim-express-$RELEASE_VERSION
 mkdir $RELEASE_FOLDER
 cd $RELEASE_FOLDER
-cp ../../low-code-simulation-management/target/simulator-jar-with-dependencies.jar simulator.jar
+cp ../../core/target/simulator-jar-with-dependencies.jar simulator.jar
 
 mkdir scenarios
-RESOURCE_DIRECTORY=low-code-simulation-management/src/main/resources
+RESOURCE_DIRECTORY=core/src/main/resources
 cp ../../$RESOURCE_DIRECTORY/scenarios/geo-distributed-datacenter-network.yaml ./scenarios
 
 mkdir extensions
-cp ../../external-extensions/target/external-extensions-$RELEASE_VERSION-SNAPSHOT.jar ./extensions/workload-generators-$RELEASE_VERSION.jar
+cp ../../extensions/target/cloudsim-express-extensions-$RELEASE_VERSION-SNAPSHOT.jar ./extensions/workload-generators-$RELEASE_VERSION.jar
 
 mkdir logs
 
 mkdir sample-data
 cp ../../external-dependencies/data/network/aws-geo-distributed-datacenter-inter-network-data.csv sample-data
 
-cp ../../$RESOURCE_DIRECTORY/low-code-simulator-configs.properties configs.properties
+cp ../../$RESOURCE_DIRECTORY/cloudsim-express-configs.properties configs.properties
 
 cp ../../$RESOURCE_DIRECTORY/log4j2.properties ./
 
 cd ../
 
-zip -r low-code-simulation-tool-$RELEASE_VERSION.zip $RELEASE_FOLDER
+zip -r cloudsim-express-$RELEASE_VERSION.zip $RELEASE_FOLDER
 
 rm -rf $RELEASE_FOLDER

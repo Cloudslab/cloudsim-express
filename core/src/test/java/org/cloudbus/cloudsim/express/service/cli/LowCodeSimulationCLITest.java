@@ -33,7 +33,7 @@ public class LowCodeSimulationCLITest {
     @Test
     void PrepareProcessingElementsListTest() {
 
-        String LOW_CODE_SIMULATOR_CONFIGS_PROPERTIES_FILE_PATH = "./src/test/resources/processing-element-test-low-code-simulator-configs.properties";
+        String LOW_CODE_SIMULATOR_CONFIGS_PROPERTIES_FILE_PATH = "./src/test/resources/processing-element-test-cloudsim-express-configs.properties";
         try {
             String[] args = {LOW_CODE_SIMULATOR_CONFIGS_PROPERTIES_FILE_PATH};
             CloudSimExpressCLI.main(args);

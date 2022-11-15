@@ -27,6 +27,7 @@
         <groupId>org.cloudbus.cloudsim.cloudsim-express</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
+
     <artifactId>cloudsim-express-core</artifactId>
     <name>CloudSim Express: Core</name>
 

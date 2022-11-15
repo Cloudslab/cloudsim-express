@@ -36,6 +36,6 @@ public class LowCodeSimulationRuntimeException extends RuntimeException {
     }
 
     public ErrorCode getCode() {
-        return code;
+        return this.code;
     }
 }

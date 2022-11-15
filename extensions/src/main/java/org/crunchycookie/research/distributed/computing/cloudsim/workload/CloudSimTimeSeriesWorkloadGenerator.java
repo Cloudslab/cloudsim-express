@@ -23,7 +23,7 @@ import org.crunchycookie.research.distributed.computing.cloudsim.workload.impl.h
 // TODO: 2022-05-09 Add proper support from the framework for time series.
 public interface CloudSimTimeSeriesWorkloadGenerator extends CloudSimWorkloadGenerator {
 
-    Workload getNext(double currentSimulationTime);
+    Workload getNext(double currentSimulationTime, String zone);
 
-    double getNextSubmissionTime(double currentSimulationTime);
+    double getNextSubmissionTime(double currentSimulationTime, String zone);
 }

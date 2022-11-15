@@ -28,6 +28,7 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -40,7 +41,7 @@ public class InterZoneNetworkHelper {
     public InterZoneNetworkHelper(File interZoneNetworkDetails) {
 
         try {
-            Reader in = new FileReader(interZoneNetworkDetails);
+            Reader in = new FileReader(interZoneNetworkDetails, StandardCharsets.UTF_8);
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
 
             links = new ArrayList<>();
@@ -70,7 +71,7 @@ public class InterZoneNetworkHelper {
     }
 
     public List<Link> getLinks() {
-        return links;
+        return Collections.unmodifiableList(links);
     }
 
     public static class Link {

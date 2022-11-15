@@ -45,7 +45,7 @@ public class ErrorConstants {
             return errorCode;
         }
 
-        public void setErrorCode(String errorCode) {
+        private void setErrorCode(String errorCode) {
 
             this.errorCode = errorCode;
         }
@@ -55,7 +55,7 @@ public class ErrorConstants {
             return errorDescription;
         }
 
-        public void setErrorDescription(String errorDescription) {
+        private void setErrorDescription(String errorDescription) {
 
             this.errorDescription = errorDescription;
         }

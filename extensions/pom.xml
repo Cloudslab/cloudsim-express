@@ -30,8 +30,6 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>cloudsim-express-extensions</artifactId>
-    <packaging>jar</packaging>
-
     <name>CloudSim Express: Extensions</name>
 
     <dependencies>
