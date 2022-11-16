@@ -41,7 +41,7 @@ public class Workload {
     }
 
     private <T> List<T> getListCopy(List<T> list) {
-        return list.stream().toList();
+        return list == null ? null : list.stream().toList();
     }
 
     public List<Cloudlet> getCloudlets() {
