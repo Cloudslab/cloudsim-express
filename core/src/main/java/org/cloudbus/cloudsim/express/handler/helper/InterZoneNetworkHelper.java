@@ -20,7 +20,7 @@ package org.cloudbus.cloudsim.express.handler.helper;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 
 import java.io.File;
@@ -58,7 +58,7 @@ public class InterZoneNetworkHelper {
             }
         } catch (Exception e) {
             // TODO: 2022-03-29 Handler error
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
     }

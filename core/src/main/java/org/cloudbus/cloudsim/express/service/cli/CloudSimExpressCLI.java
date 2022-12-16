@@ -18,8 +18,8 @@
 
 package org.cloudbus.cloudsim.express.service.cli;
 
-import org.cloudbus.cloudsim.express.simulator.LowCodeSimulator;
-import org.cloudbus.cloudsim.express.simulator.impl.DefaultLowCodeSimulator;
+import org.cloudbus.cloudsim.express.simulator.CloudSimExpressSimulator;
+import org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator;
 
 import java.io.File;
 
@@ -32,10 +32,10 @@ public class CloudSimExpressCLI {
         cloudSimExpressCLI.run(args[0]);
     }
 
-    public void run(String lowCodeSimulatorConfigFile) {
+    public void run(String CloudSimExpressConfigFile) {
 
-        LowCodeSimulator simulator = new DefaultLowCodeSimulator();
-        simulator.init(new File(lowCodeSimulatorConfigFile));
+        CloudSimExpressSimulator simulator = new DefaultCloudSimExpressSimulator();
+        simulator.init(new File(CloudSimExpressConfigFile));
         simulator.simulate();
     }
 }

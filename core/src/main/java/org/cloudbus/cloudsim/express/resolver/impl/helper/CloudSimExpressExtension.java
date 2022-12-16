@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * This defines an extension for low code simulation.
  */
-public interface LowCodeSimulationExtension {
+public interface CloudSimExpressExtension {
 
     /**
      * Provide properties from the simulation description.

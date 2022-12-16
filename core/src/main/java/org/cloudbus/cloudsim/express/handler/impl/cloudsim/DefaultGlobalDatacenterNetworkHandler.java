@@ -23,7 +23,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.NetworkTopology;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.handler.helper.InterZoneNetworkHelper;
@@ -62,7 +62,7 @@ public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
             createInterZoneNetworkInCloudSim();
         } catch (Exception e) {
             // TODO: 2022-03-28 handler error.
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
     }
@@ -76,7 +76,7 @@ public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
             return true;
         } catch (Exception e) {
             // TODO: 2022-03-29 handle exception
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
     }
@@ -113,7 +113,7 @@ public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
                 return (Integer) handler.getProperty(DefaultZoneHandler.KEY_ZONE_ID);
             }
         }
-        throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR, "Could not find a matching zone handler for " +
+        throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR, "Could not find a matching zone handler for " +
                 "the zone: " + zoneName);
     }
 

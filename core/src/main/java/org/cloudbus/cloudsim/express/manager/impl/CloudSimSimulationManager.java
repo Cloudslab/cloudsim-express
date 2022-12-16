@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.manager.ScenarioManager;
 import org.cloudbus.cloudsim.express.manager.SimulationManager;
@@ -81,7 +81,7 @@ public class CloudSimSimulationManager implements SimulationManager {
             simulationLogsFile.createNewFile();
             simulationLogsFileOutputStream = new FileOutputStream(simulationLogsFile);
         } catch (Exception e) {
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Unable to create the log file", e);
         }
         return simulationLogsFileOutputStream;

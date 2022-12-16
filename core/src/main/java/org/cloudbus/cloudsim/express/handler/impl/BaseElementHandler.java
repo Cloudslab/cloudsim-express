@@ -63,12 +63,12 @@ public abstract class BaseElementHandler implements ElementHandler {
         return AUTOGENERATE_ID_SYMBOL.equals(id);
     }
 
-    protected List<Pair<String, String>> getExtensionProperties(Extension datacenterVariant) {
-        if (datacenterVariant.getExtensionProperties() == null
-                || datacenterVariant.getExtensionProperties().size() == 0) {
+    protected List<Pair<String, String>> getExtensionProperties(Extension extension) {
+        if (extension.getExtensionProperties() == null
+                || extension.getExtensionProperties().size() == 0) {
             return null;
         }
-        return datacenterVariant.getExtensionProperties().stream()
+        return extension.getExtensionProperties().stream()
                 .map(p -> new ImmutablePair<>(p.getKey(), p.getValue())).collect(
                         Collectors.toList());
     }

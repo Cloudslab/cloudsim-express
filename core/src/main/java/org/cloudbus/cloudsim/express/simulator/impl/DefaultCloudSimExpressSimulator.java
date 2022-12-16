@@ -20,7 +20,7 @@ package org.cloudbus.cloudsim.express.simulator.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.manager.ScenarioManager;
@@ -28,7 +28,7 @@ import org.cloudbus.cloudsim.express.manager.SimulationManager;
 import org.cloudbus.cloudsim.express.resolver.EnvironmentResolver;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 import org.cloudbus.cloudsim.express.resolver.impl.JARExtensionsResolver;
-import org.cloudbus.cloudsim.express.simulator.LowCodeSimulator;
+import org.cloudbus.cloudsim.express.simulator.CloudSimExpressSimulator;
 
 import java.io.File;
 import java.io.FileReader;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class DefaultLowCodeSimulator implements LowCodeSimulator {
+public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator {
 
     public static final String MODULE_SCENARIO_MANAGER = "module.scenario.manager";
     public static final String MODULE_SIMULATION_MANAGER = "module.simulation.manager";
@@ -48,7 +48,7 @@ public class DefaultLowCodeSimulator implements LowCodeSimulator {
     public static final String SIMULATION_SCENARIO_CLASS_NAME = "simulation.scenario.model.class";
     public static final String SIMULATION_OUTPUT_LOG_FOLDER = "simulation.output.log.folder";
     public static final String ELEMENT_HANDLER_PRIORITY_CLASS_PREFIX = "element.handler.priority.";
-    private static final Logger logger = LogManager.getLogger(DefaultLowCodeSimulator.class);
+    private static final Logger logger = LogManager.getLogger(DefaultCloudSimExpressSimulator.class);
     private SimulationManager simulationManager;
 
     @Override
@@ -143,7 +143,7 @@ public class DefaultLowCodeSimulator implements LowCodeSimulator {
             props.load(new FileReader(configsFile));
         } catch (Exception e) {
             // TODO: 2022-03-28 handle error
-            throw new LowCodeSimulationRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
         return props;
