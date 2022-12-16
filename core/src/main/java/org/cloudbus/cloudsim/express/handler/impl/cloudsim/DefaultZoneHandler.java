@@ -22,7 +22,7 @@ import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.handler.impl.BaseElementHandler;
@@ -80,7 +80,7 @@ public class DefaultZoneHandler extends BaseElementHandler {
             broker.submitVmList(vmList);
             broker.submitCloudletList(cloudletList);
         } catch (Exception e) {
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
             // TODO: 2022-03-28 handler error.
         }
@@ -94,7 +94,7 @@ public class DefaultZoneHandler extends BaseElementHandler {
             return true;
         } catch (Exception e) {
             // TODO: 2022-03-29 handle error
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
     }

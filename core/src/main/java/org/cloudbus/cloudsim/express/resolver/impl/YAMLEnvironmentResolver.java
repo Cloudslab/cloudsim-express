@@ -19,7 +19,7 @@
 package org.cloudbus.cloudsim.express.resolver.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.resolver.EnvironmentResolver;
@@ -50,7 +50,7 @@ public class YAMLEnvironmentResolver implements EnvironmentResolver {
             simulationElement = getSimulationElementFromYAML(scenarioClassName, input);
         } catch (Throwable e) {
             // TODO: 2022-03-18 handle error
-            throw new LowCodeSimulationRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
 

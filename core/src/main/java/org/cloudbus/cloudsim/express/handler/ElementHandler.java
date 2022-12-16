@@ -18,7 +18,7 @@
 
 package org.cloudbus.cloudsim.express.handler;
 
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 
@@ -65,14 +65,4 @@ public interface ElementHandler {
      * @return Corresponding value as an object.
      */
     Object getProperty(String key);
-
-    /**
-     * Supports hyper-parameter tuning by providing the objective function output.
-     *
-     * @return Output of the objective function based on the simulation.
-     */
-    default double getObjectiveFunctionOutput() {
-
-        throw new LowCodeSimulationRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR, "Method not implemented");
-    }
 }

@@ -19,11 +19,11 @@
 package org.cloudbus.cloudsim.express.resolver.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
-import org.cloudbus.cloudsim.express.resolver.impl.helper.LowCodeSimulationExtension;
+import org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -61,12 +61,12 @@ public class JARExtensionsResolver implements ExtensionsResolver {
         try {
             Object instance = clazz.getConstructor(constructorParameterTypes)
                     .newInstance(constructorParameters);
-            handleLowCodeSimulationExtensions(clazz, instance, extensionProperties);
+            handleCloudSimExpressExtensions(clazz, instance, extensionProperties);
             return instance;
         } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
                  InvocationTargetException e) {
             // TODO: 2022-03-20 handle error
-            throw new LowCodeSimulationRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
     }
@@ -84,7 +84,7 @@ public class JARExtensionsResolver implements ExtensionsResolver {
             }
         } catch (ClassNotFoundException e) {
             // TODO: 2022-03-20 handle error
-            throw new LowCodeSimulationRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
         return clazz;
@@ -97,11 +97,11 @@ public class JARExtensionsResolver implements ExtensionsResolver {
         return new ArrayList<>(getPrioritizedElementHandlers(this.elementHandlerClassesPriorityList));
     }
 
-    private void handleLowCodeSimulationExtensions(Class<?> clazz, Object instance,
-                                                   List<Pair<String, String>> extensionProperties) {
+    private void handleCloudSimExpressExtensions(Class<?> clazz, Object instance,
+                                                 List<Pair<String, String>> extensionProperties) {
 
-        if (isLowCodeExtension(clazz)) {
-            LowCodeSimulationExtension extension = (LowCodeSimulationExtension) instance;
+        if (isCloudSimExpressExtension(clazz)) {
+            CloudSimExpressExtension extension = (CloudSimExpressExtension) instance;
 
             // Supply extension resolver.
             extension.setExtensionResolver(this);
@@ -113,8 +113,8 @@ public class JARExtensionsResolver implements ExtensionsResolver {
         }
     }
 
-    private boolean isLowCodeExtension(Class<?> clazz) {
-        return LowCodeSimulationExtension.class.isAssignableFrom(clazz);
+    private boolean isCloudSimExpressExtension(Class<?> clazz) {
+        return CloudSimExpressExtension.class.isAssignableFrom(clazz);
     }
 
     private List<ElementHandler> getPrioritizedElementHandlers(
@@ -136,7 +136,7 @@ public class JARExtensionsResolver implements ExtensionsResolver {
                 return file.toURI().toURL();
             } catch (Exception e) {
                 // TODO: 2022-03-24 handle error
-                throw new LowCodeSimulationRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
+                throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
                         "Please refer to the stacktrace", e);
             }
         }).filter(Objects::nonNull).collect(Collectors.toList()).toArray(new URL[]{});

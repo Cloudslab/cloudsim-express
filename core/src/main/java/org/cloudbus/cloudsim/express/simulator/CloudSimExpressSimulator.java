@@ -16,26 +16,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cloudbus.cloudsim.express.exceptions;
+package org.cloudbus.cloudsim.express.simulator;
 
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
+import java.io.File;
 
-public class LowCodeSimulationRuntimeException extends RuntimeException {
+/**
+ * This class represents the low code simulation layer, which includes its various modules and
+ * interconnections between them.
+ */
+public interface CloudSimExpressSimulator {
 
-    private ErrorCode code;
+    /**
+     * Initialize the various modules and interconnections between them.
+     *
+     * @param configsFile Path to the configuration file.
+     */
+    void init(File configsFile);
 
-    public LowCodeSimulationRuntimeException(ErrorCode code, String message, Throwable cause) {
-
-        super(message, cause);
-        this.code = code;
-    }
-
-    public LowCodeSimulationRuntimeException(ErrorCode code, String message) {
-        super(message);
-        this.code = code;
-    }
-
-    public ErrorCode getCode() {
-        return this.code;
-    }
+    /**
+     * Starts the simulation.
+     */
+    void simulate();
 }

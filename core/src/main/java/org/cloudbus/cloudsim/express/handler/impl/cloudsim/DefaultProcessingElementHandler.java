@@ -19,7 +19,7 @@
 package org.cloudbus.cloudsim.express.handler.impl.cloudsim;
 
 import org.cloudbus.cloudsim.Pe;
-import org.cloudbus.cloudsim.express.exceptions.LowCodeSimulationRuntimeException;
+import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
 import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.handler.impl.BaseElementHandler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
@@ -74,7 +74,7 @@ public class DefaultProcessingElementHandler extends BaseElementHandler {
             }
         } catch (Exception e) {
             // TODO: 2022-03-28 handler error.
-            throw new LowCodeSimulationRuntimeException(ErrorCode.UNKNOWN_ERROR,
+            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Please refer to the stacktrace", e);
         }
     }
@@ -82,7 +82,7 @@ public class DefaultProcessingElementHandler extends BaseElementHandler {
     @Override
     public boolean isSimulated() {
 
-        throw new LowCodeSimulationRuntimeException(ELEMENT_NOT_AWARE_OF_SIMULATION,
+        throw new CloudSimExpressRuntimeException(ELEMENT_NOT_AWARE_OF_SIMULATION,
                 "Cannot perform this task at this level. Please use a higher level element to handle this scenario");
     }
 
