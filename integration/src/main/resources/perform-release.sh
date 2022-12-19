@@ -19,8 +19,11 @@
 
 # Written and tested for linux
 
-
 RELEASE_VERSION=0.1
+pwd
+cd ../
+
+pwd
 
 rm -rf release-artifacts
 mkdir release-artifacts

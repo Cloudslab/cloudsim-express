@@ -76,22 +76,6 @@
                 <version>${maven-install-plugin.version}</version>
                 <inherited>false</inherited>
             </plugin>
-
-<!--            <plugin>-->
-<!--                <groupId>com.github.spotbugs</groupId>-->
-<!--                <artifactId>spotbugs-maven-plugin</artifactId>-->
-<!--                <version>4.7.2.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>check</goal>-->
-<!--                        </goals>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--                <configuration>-->
-<!--                    <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>-->
-<!--                </configuration>-->
-<!--            </plugin>-->
         </plugins>
     </build>
 
@@ -161,8 +145,9 @@
 
     <modules>
         <module>parent</module>
-        <module>core</module>
         <module>extensions</module>
+        <module>core</module>
+        <module>integration</module>
     </modules>
     <name>CloudSim Express: Aggregator</name>
 
