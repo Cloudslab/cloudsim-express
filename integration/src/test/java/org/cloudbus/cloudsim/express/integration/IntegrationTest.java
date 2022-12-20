@@ -25,45 +25,14 @@ import org.cloudbus.cloudsim.express.integration.helper.IntegrationHelper;
 import org.junit.jupiter.api.Test;
 
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.FileSystems;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Comparator;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class IntegrationTest {
-
-    @Test
-    void executeDefaultScenario() throws URISyntaxException, IOException {
-
-        var buildDirectory = Paths.get("").toAbsolutePath().toString();
-        var integrationTestRootLocation = buildDirectory + getSeparator() + "target" + getSeparator() + "integration-tests";
-        var cloudSimExpressToolLocation = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express-0.1");
-
-        prepareCloudSimExpressTool(integrationTestRootLocation);
-
-        executeCloudSimExpressTool(cloudSimExpressToolLocation);
-
-        var reference = Paths.get(this.getClass().getClassLoader().getResource("reference-cloudsim-successful.log").toURI()).toFile();
-
-        Optional<Path> lastFilePath = Files.list(Paths.get(new URI(cloudSimExpressToolLocation + getSeparator() + "logs")))    // here we get the stream with full directory listing
-                .filter(f -> !Files.isDirectory(f))  // exclude subdirectories from listing
-                .max(Comparator.comparingLong(f -> f.toFile().lastModified()));  // finally get the last file using simple comparator by lastModified field
-        lastFilePath.ifPresent(path -> {
-            try {
-                Reader reader1 = new BufferedReader(new FileReader(path.toFile()));
-                Reader reader2 = new BufferedReader(new FileReader(reference));
-                assertTrue(IOUtils.contentEqualsIgnoreEOL(reader1, reader2));
-            } catch (Exception e) {
-                throw new RuntimeException("content mismatch", e);
-            }
-        });
-    }
 
     private static void executeCloudSimExpressTool(File cloudSimExpressToolLocation) {
         try {
@@ -99,5 +68,26 @@ public class IntegrationTest {
         } catch (Exception e) {
             throw new RuntimeException("Could not handle file creation", e);
         }
+    }
+
+    @Test
+    void executeDefaultScenario() throws URISyntaxException, IOException {
+
+        var buildDirectory = Paths.get("").toAbsolutePath().toString();
+        var integrationTestRootLocation = buildDirectory + getSeparator() + "target" + getSeparator() + "integration-tests";
+        var cloudSimExpressToolLocation = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express-0.1");
+
+        prepareCloudSimExpressTool(integrationTestRootLocation);
+
+        executeCloudSimExpressTool(cloudSimExpressToolLocation);
+
+        File cloudSimExpressLogsLocation = new File(cloudSimExpressToolLocation + getSeparator() + "logs");
+        var testLog = cloudSimExpressLogsLocation.listFiles()[0];
+        Reader reader1 = new BufferedReader(new FileReader(testLog));
+
+        var reference = Paths.get(this.getClass().getClassLoader().getResource("reference-cloudsim-successful.log").toURI()).toFile();
+        Reader reader2 = new BufferedReader(new FileReader(reference));
+
+        assertTrue(IOUtils.contentEqualsIgnoreEOL(reader1, reader2), "CloudSim logs are different from whats expected in a successful simulation");
     }
 }
