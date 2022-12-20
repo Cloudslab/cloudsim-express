@@ -58,9 +58,9 @@ public class IntegrationTest {
             // Copy and unzip CloudSimExpress.
             var releaseArtifactsLocation = Paths.get("").toAbsolutePath() + getSeparator() + ".." + getSeparator()
                     + "release-artifacts";
-            var targetFile = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express-0.1.zip");
+            var targetFile = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express.zip");
             FileUtils.copyFile(
-                    new File(releaseArtifactsLocation + getSeparator() + "cloudsim-express-0.1.zip"),
+                    new File(releaseArtifactsLocation + getSeparator() + "cloudsim-express.zip"),
                     targetFile
             );
             IntegrationHelper.unzipFolder(Path.of(targetFile.toURI()), Path.of(integrationTestRootLocation));
@@ -75,7 +75,7 @@ public class IntegrationTest {
 
         var buildDirectory = Paths.get("").toAbsolutePath().toString();
         var integrationTestRootLocation = buildDirectory + getSeparator() + "target" + getSeparator() + "integration-tests";
-        var cloudSimExpressToolLocation = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express-0.1");
+        var cloudSimExpressToolLocation = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express");
 
         prepareCloudSimExpressTool(integrationTestRootLocation);
 

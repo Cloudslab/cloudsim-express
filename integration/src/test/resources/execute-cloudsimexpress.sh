@@ -16,5 +16,5 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-cd ../integration-tests/cloudsim-express-0.1
+cd ../integration-tests/cloudsim-express
 java -jar simulator.jar configs.properties >> out.log
