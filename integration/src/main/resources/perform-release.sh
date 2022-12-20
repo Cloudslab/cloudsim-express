@@ -19,14 +19,17 @@
 
 # Written and tested for linux
 
-
 RELEASE_VERSION=0.1
+pwd
+cd ../
+
+pwd
 
 rm -rf release-artifacts
 mkdir release-artifacts
 cd release-artifacts
 
-RELEASE_FOLDER=cloudsim-express-$RELEASE_VERSION
+RELEASE_FOLDER=cloudsim-express
 mkdir $RELEASE_FOLDER
 cd $RELEASE_FOLDER
 cp ../../core/target/simulator-jar-with-dependencies.jar simulator.jar
@@ -49,6 +52,6 @@ cp ../../$RESOURCE_DIRECTORY/log4j2.properties ./
 
 cd ../
 
-zip -r cloudsim-express-$RELEASE_VERSION.zip $RELEASE_FOLDER
+zip -r cloudsim-express.zip $RELEASE_FOLDER
 
 rm -rf $RELEASE_FOLDER
