@@ -32,6 +32,7 @@ import org.cloudbus.cloudsim.express.simulator.CloudSimExpressSimulator;
 
 import java.io.File;
 import java.io.FileReader;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -139,8 +140,8 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
     private Properties loadProps(File configsFile) {
 
         Properties props = new Properties();
-        try {
-            props.load(new FileReader(configsFile));
+        try(var reader = new FileReader(configsFile, StandardCharsets.UTF_8)) {
+            props.load(reader);
         } catch (Exception e) {
             // TODO: 2022-03-28 handle error
             throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,

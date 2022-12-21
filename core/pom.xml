@@ -102,7 +102,7 @@
                             <archive>
                                 <manifest>
                                     <mainClass>
-                                        org.cloudbus.cloudsim.express.integration.CloudSimExpressCLI
+                                        org.cloudbus.cloudsim.express.service.CloudSimExpressCLI
                                     </mainClass>
                                 </manifest>
                             </archive>
