@@ -21,46 +21,54 @@ package org.cloudbus.cloudsim.express.handler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 
 /**
+ * Handles an element for the simulation.
+ * <p>
  * Scenarios are composed of multiple elements that are defined in the definition files. For
  * example, geo-distributed datacenter network is a composition of multiple regional zones. Also,
- * different scenarios share same elements but with different compositions. Therefore, an element is
- * handled with this class independently such that they can be reused in multiple scenarios.
+ * different scenarios share same elements but with different compositions. Each such element needs to have a handler,
+ * that is responsible for how the element is handled in the simulation. See
+ * {@link org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler} or any other default
+ * implementations for references.
+ *
+ * @see org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler
  */
 public interface ElementHandler {
 
     /**
-     * Initialize the handler with the corresponding description.
+     * Initialize the component with the human-readable description.
      *
-     * @param elementDescription Describes the element.
-     * @param extensionsResolver Extensions resolver, that realizes any extension required.
+     * @param elementDescription Element description from the simulation scenario YAML file.
+     * @param extensionsResolver Extensions resolver, that create any dependant extensions required.
      */
     void init(Object elementDescription, ExtensionsResolver extensionsResolver);
 
     /**
-     * Perform element handling.
+     * Perform the logic on handling the element.
+     *
+     * @see org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler
      */
     void handle();
 
     /**
-     * Returns whether this element has undergone the simulation.
+     * Returns whether this element has completed the simulation.
      *
-     * @return True is the element has completed its simulation.
+     * @return True is the element has completed its simulation, False otherwise.
      */
     boolean isSimulated();
 
     /**
-     * Checks whether the provided description object can be handled by this handler.
+     * Checks whether this handler is able to handle the provided element.
      *
-     * @param elementDescription Element description.
+     * @param elementDescription Element description from the simulation scenario YAML file.
      * @return True, if the element can be handled. False, otherwise.
      */
     boolean canHandle(Object elementDescription);
 
     /**
-     * Obtain handler specific properties.
+     * Returns any requested information.
      *
-     * @param key Identifies the property.
-     * @return Corresponding value as an object.
+     * @param key A key of the property. Maintaining the key is a responsibility of the developer.
+     * @return Corresponding information.
      */
     Object getProperty(String key);
 }

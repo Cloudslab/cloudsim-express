@@ -24,27 +24,32 @@ import java.io.File;
 
 
 /**
- * Reads environment definition config files and convert to environment description objects.
+ * The resolver which builds the simulation handler.
+ * <p>
+ * This resolver reads human-readable simulation scenario description, and the name of the model class that is supposed
+ * to match it. It then works with the {@link ExtensionsResolver} to build a handler {@link ElementHandler}
+ * component that is capable of handling the simulation scenario.
+ *
+ * @see ElementHandler
  */
 public interface EnvironmentResolver {
 
     /**
-     * Read the simulation scenario from a human-readable file, and initialize the corresponding
-     * simulation handler.
+     * Interpret the simulation scenario and builds the simulation handler.
      *
-     * @param simulationScenarioDescription File which defines simulation scenario in a human-readable
-     *                                      format.
-     * @param scenarioClassName             The class name of the model file which represents the
-     *                                      simulation scenario.
-     * @param extensionsResolver            Extensions resolver.
+     * @param simulationScenarioDescription    File which defines simulation scenario in a human-readable
+     *                                         format.
+     * @param simulationScenarioModelClassName The class name of the model file which represents the
+     *                                         simulation scenario.
+     * @param extensionsResolver               Extensions resolver.
      */
-    void init(File simulationScenarioDescription, String scenarioClassName,
+    void init(File simulationScenarioDescription, String simulationScenarioModelClassName,
               ExtensionsResolver extensionsResolver);
 
     /**
-     * Get the initialized simulation handler.
+     * Returns the simulation handler.
      *
-     * @return Simulation handler.
+     * @return Corresponding simulation handler configured for the specific simulation scenario.
      */
     ElementHandler getSimulationHandler();
 }
