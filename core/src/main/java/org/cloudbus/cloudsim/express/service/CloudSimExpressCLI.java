@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.cloudbus.cloudsim.express.integration;
+package org.cloudbus.cloudsim.express.service;
 
 import org.cloudbus.cloudsim.express.simulator.CloudSimExpressSimulator;
 import org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator;

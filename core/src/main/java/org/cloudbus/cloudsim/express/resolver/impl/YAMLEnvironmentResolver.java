@@ -36,14 +36,11 @@ import java.util.Map;
  */
 public class YAMLEnvironmentResolver implements EnvironmentResolver {
 
-    ExtensionsResolver extensionsResolver;
     ElementHandler simulationHandler;
 
     @Override
     public void init(File simulationScenarioDescription, String scenarioClassName,
                      ExtensionsResolver extensionsResolver) {
-
-        this.extensionsResolver = extensionsResolver;
 
         Object simulationElement;
         try (InputStream input = new FileInputStream(simulationScenarioDescription)) {

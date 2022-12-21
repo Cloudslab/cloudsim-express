@@ -29,6 +29,7 @@ import org.cloudbus.cloudsim.express.manager.SimulationManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,7 +64,7 @@ public class CloudSimSimulationManager implements SimulationManager {
         logger.atInfo().log("Starting CloudSim simulation");
         CloudSim.startSimulation();
 
-        boolean isCompleted = waitForCompletion();
+        waitForCompletion();
 
         CloudSim.stopSimulation();
         logger.atInfo().log("CloudSim Simulation is completed");
@@ -80,7 +81,7 @@ public class CloudSimSimulationManager implements SimulationManager {
                     "cloudsim-" + Instant.now().toEpochMilli() + ".log");
             simulationLogsFile.createNewFile();
             simulationLogsFileOutputStream = new FileOutputStream(simulationLogsFile);
-        } catch (Exception e) {
+        } catch (IOException e) {
             throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
                     "Unable to create the log file", e);
         }

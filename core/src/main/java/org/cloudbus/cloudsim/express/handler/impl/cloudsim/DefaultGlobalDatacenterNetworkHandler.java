@@ -58,7 +58,7 @@ public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
     public void handle() {
 
         try {
-            CreateZones();
+            createZones();
             createInterZoneNetworkInCloudSim();
         } catch (Exception e) {
             // TODO: 2022-03-28 handler error.
@@ -93,7 +93,7 @@ public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
         return null;
     }
 
-    protected void CreateZones() {
+    protected void createZones() {
         zoneHandlers = new ArrayList<>();
         globalDatacenterNetworkDescription.getZones().forEach(zone -> {
             ElementHandler zoneHandler = getHandler(zone);
