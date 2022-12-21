@@ -53,11 +53,11 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
     private SimulationManager simulationManager;
 
     @Override
-    public void init(File configsFile) {
+    public void init(File configs) {
 
         logger.atInfo().log("Initializing the Low-code simulator...");
 
-        Properties props = loadProps(configsFile);
+        Properties props = loadProps(configs);
         logger.atDebug().log(props.toString());
 
         ExtensionsResolver extensionsResolver = getExtensionsResolver(props);

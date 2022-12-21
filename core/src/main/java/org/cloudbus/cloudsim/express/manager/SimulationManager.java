@@ -21,16 +21,15 @@ package org.cloudbus.cloudsim.express.manager;
 import java.io.File;
 
 /**
- * Manages the simulation. T = Environment description object and U = Simulation extension base
- * class.
+ * Manages simulation execution.
  */
 public interface SimulationManager {
 
     /**
-     * Initialize with the scenario.
+     * Initialize the component.
      *
-     * @param scenarioManager      Manager to handle the scenario.
-     * @param simulationLogsFolder Folder to persist logs during the simulation.
+     * @param scenarioManager      The {@link SimulationManager}.
+     * @param simulationLogsFolder Specific folder to publish logs.
      */
     void init(ScenarioManager scenarioManager, File simulationLogsFolder);
 
@@ -40,8 +39,7 @@ public interface SimulationManager {
     void run();
 
     /**
-     * This is a blocking call. The manager will block the current thread until the simulation
-     * completes.
+     * Blocks current thread until simulation completes.
      *
      * @return True, if the simulation completed as expected.
      */

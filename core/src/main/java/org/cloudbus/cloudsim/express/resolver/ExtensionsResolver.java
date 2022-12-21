@@ -25,55 +25,57 @@ import java.io.File;
 import java.util.List;
 
 /**
- * Manages extensions supplied to the framework.
+ * The resolver which manages loading externally provided extensions.
  */
 public interface ExtensionsResolver {
 
     /**
-     * Make the resolver aware about the folder where extensions reside, as well as the priority order
-     * of the available element handlers.
+     * Initialize the component with the folder that has extensions, as well as the priorities of
+     * {@link ElementHandler} components.
      *
-     * @param extensionsFolder                  Folder where extensions reside.
-     * @param elementHandlerClassesPriorityList Priority order of the available element handlers
+     * @param extensionsFolder                  Folder containing external extensions.
+     * @param elementHandlerClassesPriorityList Priority order of the available element handlers.
      */
     void init(File extensionsFolder, List<String> elementHandlerClassesPriorityList);
 
     /**
-     * Get the extension instance by its class name.
+     * Builds and returns an object of the given class and its constructor parameters.
      *
-     * @param className                 The name of the class. It is assumed that the corresponding
-     *                                  class has a constructor which accepts no arguments.
-     * @param constructorParameterTypes Defines the parameters of the constructor.
-     * @return The extension instance.
+     * @param className                 The name of the class.
+     * @param constructorParameterTypes Data types of the constructor parameters.
+     * @param constructorParameters     Constructor parameters.
+     * @return The instantiated object.
      */
     Object getExtension(String className, Class<?>[] constructorParameterTypes,
                         Object[] constructorParameters);
 
     /**
-     * Get the extension instance by its class name, and supplying its parameters.
+     * Builds and returns an object of the given class and its constructor parameters. If the object is an instance of
+     * {@link org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension}, then the provided
+     * extension properties are also supplied via
+     * {@link org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension#setProperties(List)}.
      *
-     * @param className                 The name of the class. It is assumed that the corresponding
-     *                                  class has a constructor which accepts no arguments.
-     * @param constructorParameterTypes Defines the parameters of the constructor.
-     * @param extensionProperties       Properties of the extension.
-     * @return The extension instance.
+     * @param className                 The name of the class.
+     * @param constructorParameterTypes Data types of the constructor parameters.
+     * @param constructorParameters     Constructor parameters.
+     * @param extensionProperties       The properties for the {@link org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension}.
+     * @return The instantiated object.
      */
     Object getExtension(String className, Class<?>[] constructorParameterTypes,
                         Object[] constructorParameters, List<Pair<String, String>> extensionProperties);
 
     /**
-     * Get the extension class by its class name.
+     * Returns the corresponding class for the given class name.
      *
-     * @param className The name of the class. It is assumed that the corresponding class has a
-     *                  constructor which accepts no arguments.
-     * @return The extension class.
+     * @param className The name of the class.
+     * @return The class.
      */
     Class<?> getExtensionClass(String className);
 
     /**
-     * Return registered element handlers.
+     * Returns the registered {@link ElementHandler}s.
      *
-     * @return Element handlers list in their prioritized order.
+     * @return The list of {@link ElementHandler}s in their priority order.
      */
     List<ElementHandler> getElementHandlers();
 }

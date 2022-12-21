@@ -30,9 +30,9 @@ public class DefaultScenarioManager implements ScenarioManager {
     ElementHandler scenarioElementHandler;
 
     @Override
-    public void init(ElementHandler scenarioElementHandler) {
+    public void init(ElementHandler scenarioHandler) {
 
-        this.scenarioElementHandler = scenarioElementHandler;
+        this.scenarioElementHandler = scenarioHandler;
     }
 
     @Override

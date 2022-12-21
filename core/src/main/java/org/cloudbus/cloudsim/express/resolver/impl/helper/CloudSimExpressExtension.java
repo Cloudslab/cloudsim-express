@@ -24,22 +24,26 @@ import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 import java.util.List;
 
 /**
- * This defines an extension for low code simulation.
+ * An extension of CloudSimExpress.
+ * <p>
+ * An extension of this type is able to consume properties via human-readable simulation scenario description, and
+ * also to create dependant objects from classes available in CloudSimExpress extensions.
  */
 public interface CloudSimExpressExtension {
 
     /**
-     * Provide properties from the simulation description.
+     * Prior to the simulation, the CloudSimExpress tool invokes this method and provide any available properties. For
+     * an example, if a custom {@link org.cloudbus.cloudsim.Datacenter} implements {@link CloudSimExpressExtension},
+     * this method is invoked and any properties that are defined for this specific custom class is provided.
      *
-     * @param properties Properties described in the description file.
+     * @param properties Properties described in the simulation description for this specific class.
      */
     void setProperties(List<Pair<String, String>> properties);
 
     /**
-     * Provide the reference to the extension resolver, because extensions might want to load
-     * additional instances of custom classes.
+     * The CloudSimExpress tool invokes this method and provide the {@link ExtensionsResolver} prior simulation begins.
      *
-     * @param resolver Reference to the resolver.
+     * @param resolver The {@link ExtensionsResolver}.
      */
     void setExtensionResolver(ExtensionsResolver resolver);
 }

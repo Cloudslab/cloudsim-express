@@ -21,27 +21,26 @@ package org.cloudbus.cloudsim.express.manager;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 
 /**
- * Manages scenario specific logic. T represents the environment object, and U represents the
- * simulation framework's base entities.
+ * Manages building and execution of simulation scenario.
  */
 public interface ScenarioManager {
 
     /**
-     * Initialize the scenario manager with the corresponding simulation handler.
+     * Initialize the component with the scenario handler.
      *
-     * @param scenarioElementHandler Handler that is responsible for the simulation.
+     * @param scenarioHandler The corresponding handler for the simulation scenario.
      */
-    void init(ElementHandler scenarioElementHandler);
+    void init(ElementHandler scenarioHandler);
 
     /**
-     * Build the scenario using the initialized simulation handler.
+     * Builds the scenario.
      */
     void build();
 
     /**
      * A blocking call to wait until scenario completion.
      *
-     * @return
+     * @return Returns the completion state. True if success, False otherwise.
      */
     boolean waitForScenarioCompletion();
 }

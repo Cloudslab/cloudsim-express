@@ -28,30 +28,31 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-/**
- * Expects simulation description file to be written in YAML.
- */
 public class YAMLEnvironmentResolver implements EnvironmentResolver {
 
     ElementHandler simulationHandler;
 
     @Override
-    public void init(File simulationScenarioDescription, String scenarioClassName,
+    public void init(File simulationScenarioDescription, String simulationScenarioModelClassName,
                      ExtensionsResolver extensionsResolver) {
 
-        Object simulationElement;
-        try (InputStream input = new FileInputStream(simulationScenarioDescription)) {
-            simulationElement = getSimulationElementFromYAML(scenarioClassName, input);
-        } catch (Throwable e) {
-            // TODO: 2022-03-18 handle error
+        Object simulationScenarioModel;
+        try (var in = new FileInputStream(simulationScenarioDescription)) {
+            simulationScenarioModel = getSimulationElementFromYAML(simulationScenarioModelClassName, in);
+        } catch (ClassNotFoundException e) {
             throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
+                    "Could not find the specified class for the simulation scenario: " + simulationScenarioModelClassName, e);
+        } catch (IOException e) {
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
+                    "Could not process the simulation scenario description file: " + simulationScenarioDescription, e);
         }
 
-        findAndInitSimulationHandler(extensionsResolver, simulationElement);
+        // Initialize corresponding scenario handler.
+        initHandler(extensionsResolver, simulationScenarioModel);
     }
 
     @Override
@@ -60,8 +61,7 @@ public class YAMLEnvironmentResolver implements EnvironmentResolver {
         return this.simulationHandler;
     }
 
-    private void findAndInitSimulationHandler(ExtensionsResolver extensionsResolver,
-                                              Object simulationElement) {
+    private void initHandler(ExtensionsResolver extensionsResolver, Object simulationElement) {
 
         extensionsResolver.getElementHandlers().stream()
                 .filter(handler -> handler.canHandle(simulationElement))
@@ -70,7 +70,7 @@ public class YAMLEnvironmentResolver implements EnvironmentResolver {
                     handler.init(simulationElement, extensionsResolver);
                     this.simulationHandler = handler;
                 }, () -> {
-                    throw new RuntimeException();
+                    throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR, "Could not find a handler for the simulation model: " + simulationElement.getClass());
                 });
     }
 
