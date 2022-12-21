@@ -118,6 +118,14 @@
                 </executions>
                 <groupId>org.apache.maven.plugins</groupId>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.4.1</version>
+                <configuration>
+                    <excludePackageNames>org.cloudbus.cloudsim.cloudsim_express.*:org.cloudbus.cloudsim.express.resolver.environment.definitions.model</excludePackageNames>
+                </configuration>
+            </plugin>
         </plugins>
 
         <resources>
