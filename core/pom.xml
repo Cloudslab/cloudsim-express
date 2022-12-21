@@ -49,10 +49,10 @@
                                 <delegatePattern>true</delegatePattern>
                             </configOptions>
                             <apiPackage>
-                                org.cloudbus.cloudsim.cloudsim-express.service
+                                org.cloudbus.cloudsim.cloudsim.express.service
                             </apiPackage>
                             <modelPackage>
-                                org.cloudbus.cloudsim.cloudsim-express.resolver.environment.definitions.model
+                                org.cloudbus.cloudsim.cloudsim.express.resolver.environment.definitions.model
                             </modelPackage>
                             <supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
                             <output>${project.basedir}/src/main/gen</output>
