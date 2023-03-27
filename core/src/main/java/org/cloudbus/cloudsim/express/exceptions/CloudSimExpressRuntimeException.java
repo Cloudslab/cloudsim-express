@@ -27,15 +27,25 @@ public class CloudSimExpressRuntimeException extends RuntimeException {
     public CloudSimExpressRuntimeException(ErrorCode code, String message, Throwable cause) {
 
         super(message, cause);
-        this.code = code;
+
+        // SpotBugs - EI_EXPOSE_REP: Fix exposing internal error code.
+        this.code = getErrorCode(code);
     }
 
     public CloudSimExpressRuntimeException(ErrorCode code, String message) {
         super(message);
-        this.code = code;
+
+        // SpotBugs - EI_EXPOSE_REP: Fix exposing internal error code.
+        this.code = getErrorCode(code);
     }
 
     public ErrorCode getCode() {
-        return this.code;
+
+        // SpotBugs - EI_EXPOSE_REP: Fix exposing internal error code.
+        return getErrorCode(this.code);
+    }
+
+    private ErrorCode getErrorCode(ErrorCode code) {
+        return ErrorCode.valueOf(code.name());
     }
 }

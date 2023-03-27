@@ -79,7 +79,10 @@ public class CloudSimSimulationManager implements SimulationManager {
             }
             File simulationLogsFile = new File(simulationLogsFolder,
                     "cloudsim-" + Instant.now().toEpochMilli() + ".log");
-            simulationLogsFile.createNewFile();
+            boolean isFileNewlyCreated = simulationLogsFile.createNewFile();
+            if (!isFileNewlyCreated) {
+                throw new IOException("A simulation log file with the name: " + simulationLogsFile.getName() + " already exists");
+            }
             simulationLogsFileOutputStream = new FileOutputStream(simulationLogsFile);
         } catch (IOException e) {
             throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,

@@ -127,7 +127,13 @@ public class JARExtensionsResolver implements ExtensionsResolver {
 
     private void prepareClassloaderForExtensions(File extensionsFolder) {
 
-        List<File> jars = Arrays.asList(Objects.requireNonNull(extensionsFolder.listFiles()));
+        File[] extensionFiles = extensionsFolder.listFiles();
+        if (extensionFiles == null) {
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR, "Could not look for " +
+                    "extensions in " + extensionsFolder.getAbsolutePath());
+        }
+
+        List<File> jars = Arrays.asList(extensionFiles);
         URL[] files = jars.stream().map(file -> {
             if (!file.isFile() || !file.getName().contains(".jar")) {
                 return null;
@@ -143,7 +149,7 @@ public class JARExtensionsResolver implements ExtensionsResolver {
 
         URL[] urls = {};
         if (files.length > 0) {
-            urls = (URL[]) files;
+            urls = files;
         }
         extensionsClassLoader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader());
     }

@@ -40,8 +40,7 @@ public class InterZoneNetworkHelper {
 
     public InterZoneNetworkHelper(File interZoneNetworkDetails) {
 
-        try {
-            Reader in = new FileReader(interZoneNetworkDetails, StandardCharsets.UTF_8);
+        try (Reader in = new FileReader(interZoneNetworkDetails, StandardCharsets.UTF_8)){
             Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(in);
 
             links = new ArrayList<>();
