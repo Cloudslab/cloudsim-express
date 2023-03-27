@@ -34,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * The test expects the healthy cloudsim log output for the testing scenario being available in the test resources
- * folder, under the name "cloudsim-successful-execution.log" .
+ * folder, under the name "cloudsim-successful-execution.log".
  */
 public class IntegrationTest {
 
