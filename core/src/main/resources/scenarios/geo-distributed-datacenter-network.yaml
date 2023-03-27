@@ -1,4 +1,3 @@
-# Schemas for any element should be defined in the `simulation-elements.yaml` file.
 ProcessingElement: &ProcessingElement
   variant:
     className: "org.cloudbus.cloudsim.Pe"
