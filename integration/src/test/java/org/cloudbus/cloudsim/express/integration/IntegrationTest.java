@@ -32,6 +32,10 @@ import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * The test expects the healthy cloudsim log output for the testing scenario being available in the test resources
+ * folder, under the name "cloudsim-successful-execution.log" .
+ */
 public class IntegrationTest {
 
     private static void executeCloudSimExpressTool(File cloudSimExpressToolLocation) {
@@ -74,6 +78,11 @@ public class IntegrationTest {
     void executeDefaultScenario() throws URISyntaxException, IOException {
 
         var buildDirectory = Paths.get("").toAbsolutePath().toString();
+        var cloudsimSuccessfulExecutionLogFile = buildDirectory + getSeparator()
+                + "src" + getSeparator()
+                + "test" + getSeparator()
+                + "resources" + getSeparator()
+                + "cloudsim-successful-execution.log";
         var integrationTestRootLocation = buildDirectory + getSeparator() + "target" + getSeparator() + "integration-tests";
         var cloudSimExpressToolLocation = new File(integrationTestRootLocation + getSeparator() + "cloudsim-express");
 
@@ -85,7 +94,7 @@ public class IntegrationTest {
         var testLog = cloudSimExpressLogsLocation.listFiles()[0];
         Reader reader1 = new BufferedReader(new FileReader(testLog));
 
-        var reference = Paths.get(this.getClass().getClassLoader().getResource("reference-cloudsim-successful.log").toURI()).toFile();
+        var reference = Paths.get(this.getClass().getClassLoader().getResource("cloudsim-successful-execution.log").toURI()).toFile();
         Reader reader2 = new BufferedReader(new FileReader(reference));
 
         assertTrue(IOUtils.contentEqualsIgnoreEOL(reader1, reader2), "CloudSim logs are different from whats expected in a successful simulation");

@@ -110,7 +110,7 @@ components:
       type: object
       properties:
         variant:
-          $ref: '#/components/schemas/'
+          $ref: '#/components/schemas/Extension'
         mips:
           type: double
     DatacenterCharacteristics:

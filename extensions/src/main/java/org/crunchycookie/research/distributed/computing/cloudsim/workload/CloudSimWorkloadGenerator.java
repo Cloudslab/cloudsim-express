@@ -28,7 +28,7 @@ import java.util.List;
  */
 public interface CloudSimWorkloadGenerator {
 
-    List<Cloudlet> getCloudletsList(int brokerId);
+    List<Cloudlet> getCloudletsList();
 
-    List<Vm> getVmList(int vmsNumber, int brokerId);
+    List<Vm> getVmList(int brokerId);
 }

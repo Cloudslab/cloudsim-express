@@ -70,11 +70,13 @@ public class DefaultZoneHandler extends BaseElementHandler {
             this.broker = getBroker();
             this.datacenter = getDatacenter();
 
-            // Obtain cloudlet list meant for the zone.
-            List<Cloudlet> cloudletList = workloadGenerator.getCloudletsList(broker.getId());
-
             // Create a set of VMs equal to the number of cloudlets.
-            List<Vm> vmList = workloadGenerator.getVmList(cloudletList.size(), broker.getId());
+            // // TODO: 27/3/23 Broker ID should be handled by the zone handler, rather than passing it to the generator.
+            List<Vm> vmList = workloadGenerator.getVmList(broker.getId());
+
+            // Obtain cloudlet list meant for the zone.
+            List<Cloudlet> cloudletList = workloadGenerator.getCloudletsList();
+            cloudletList.forEach(cloudlet -> cloudlet.setUserId(broker.getId()));
 
             // Submit to the broker.
             broker.submitVmList(vmList);
