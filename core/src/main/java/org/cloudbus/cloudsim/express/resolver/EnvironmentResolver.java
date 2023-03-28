@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,32 +24,28 @@ import java.io.File;
 
 
 /**
- * The resolver which builds the simulation handler.
- * <p>
- * This resolver reads human-readable simulation scenario description, and the name of the model class that is supposed
- * to match it. It then works with the {@link ExtensionsResolver} to build a handler {@link ElementHandler}
- * component that is capable of handling the simulation scenario.
+ * The EnvironmentResolver parses human-readable simulation scenario script. It converts the described system model into
+ * DTO objects, including the system model DTO specified by:
+ * {@link org.cloudbus.cloudsim.express.constants.ScriptConstants#SIMULATION_SYSTEM_MODEL_COMPONENT}. The resolver then
+ * interprets the {@link ElementHandler} corresponds to system model DTO and provide APIs to access that
+ * (i.e. {@link #getSystemModelHandler()}).
  *
- * @see ElementHandler
+ * @see org.cloudbus.cloudsim.express.resolver.impl.YAMLEnvironmentResolver
  */
 public interface EnvironmentResolver {
 
     /**
-     * Interpret the simulation scenario and builds the simulation handler.
+     * Initialize with the resolver.
      *
-     * @param simulationScenarioDescription    File which defines simulation scenario in a human-readable
-     *                                         format.
-     * @param simulationScenarioModelClassName The class name of the model file which represents the
-     *                                         simulation scenario.
-     * @param extensionsResolver               Extensions resolver.
+     * @param simulationScript   Human-readable simulation scenario script file.
+     * @param extensionsResolver {@link ExtensionsResolver}.
      */
-    void init(File simulationScenarioDescription, String simulationScenarioModelClassName,
-              ExtensionsResolver extensionsResolver);
+    void init(File simulationScript, ExtensionsResolver extensionsResolver);
 
     /**
-     * Returns the simulation handler.
+     * Returns the {@link ElementHandler} corresponds to system model DTO.
      *
-     * @return Corresponding simulation handler configured for the specific simulation scenario.
+     * @return {@link ElementHandler} corresponds to system model DTO.
      */
-    ElementHandler getSimulationHandler();
+    ElementHandler getSystemModelHandler();
 }

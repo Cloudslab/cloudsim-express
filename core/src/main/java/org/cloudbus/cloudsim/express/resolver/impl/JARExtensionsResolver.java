@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,14 +19,15 @@
 package org.cloudbus.cloudsim.express.resolver.impl;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.cloudbus.cloudsim.express.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
+import org.cloudbus.cloudsim.express.resolver.CloudSimExpressExtension;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
-import org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -35,16 +36,19 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * The JARExtensionsResolver class represents a resolver that reads extensions packaged as jars.
+ */
 public class JARExtensionsResolver implements ExtensionsResolver {
 
     List<String> elementHandlerClassesPriorityList;
     private URLClassLoader extensionsClassLoader;
 
     @Override
-    public void init(File extensionsFolder, List<String> elementHandlerClassesPriorityList) {
+    public void init(File extensionsFolder, List<String> elementHandlerPriorityOrder) {
 
         prepareClassloaderForExtensions(extensionsFolder);
-        this.elementHandlerClassesPriorityList = elementHandlerClassesPriorityList;
+        this.elementHandlerClassesPriorityList = elementHandlerPriorityOrder;
     }
 
     public Object getExtension(String className, Class<?>[] constructorParameterTypes,
@@ -65,9 +69,8 @@ public class JARExtensionsResolver implements ExtensionsResolver {
             return instance;
         } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
                  InvocationTargetException e) {
-            // TODO: 2022-03-20 handle error
-            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.EXTENSION_ERROR,
+                    "Could not create the extension from " + className, e);
         }
     }
 
@@ -75,7 +78,7 @@ public class JARExtensionsResolver implements ExtensionsResolver {
     @Override
     public Class<?> getExtensionClass(String className) {
 
-        Class<?> clazz = null;
+        Class<?> clazz;
         try {
             try {
                 clazz = Class.forName(className);
@@ -83,9 +86,8 @@ public class JARExtensionsResolver implements ExtensionsResolver {
                 clazz = Class.forName(className, true, extensionsClassLoader);
             }
         } catch (ClassNotFoundException e) {
-            // TODO: 2022-03-20 handle error
-            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.EXTENSION_ERROR,
+                    "Could not find the class: " + className, e);
         }
         return clazz;
     }
@@ -129,7 +131,7 @@ public class JARExtensionsResolver implements ExtensionsResolver {
 
         File[] extensionFiles = extensionsFolder.listFiles();
         if (extensionFiles == null) {
-            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR, "Could not look for " +
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.EXTENSION_ERROR, "Could not search " +
                     "extensions in " + extensionsFolder.getAbsolutePath());
         }
 
@@ -140,12 +142,12 @@ public class JARExtensionsResolver implements ExtensionsResolver {
             }
             try {
                 return file.toURI().toURL();
-            } catch (Exception e) {
+            } catch (MalformedURLException e) {
                 // TODO: 2022-03-24 handle error
-                throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                        "Please refer to the stacktrace", e);
+                throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.EXTENSION_ERROR,
+                        "An error in the file path: " + file, e);
             }
-        }).filter(Objects::nonNull).collect(Collectors.toList()).toArray(new URL[]{});
+        }).filter(Objects::nonNull).toList().toArray(new URL[]{});
 
         URL[] urls = {};
         if (files.length > 0) {

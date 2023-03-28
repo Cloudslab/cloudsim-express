@@ -16,19 +16,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.crunchycookie.research.distributed.computing.cloudsim.workload;
-
-import org.cloudbus.cloudsim.Cloudlet;
-import org.cloudbus.cloudsim.Vm;
-
-import java.util.List;
+package org.cloudbus.cloudsim.express.constants;
 
 /**
- * This interface defines a workload generator capable of managing a workload.
+ * Provide various constants support for managing the script parsing.
  */
-public interface CloudSimWorkloadGenerator {
+public class ScriptConstants {
 
-    List<Cloudlet> getCloudletsList();
-
-    List<Vm> getVmList(int brokerId);
+    // If the symbol is present, then the corresponding 'id' field is identified as auto-incrementing. In which, the
+    // CloudSim Express will handle incrementing IDs. This is useful in cases such as, when declaring multiple hosts
+    // with different IDs.
+    public static final String AUTOGENERATE_ID_SYMBOL = "-1";
+    public static final String SIMULATION_SYSTEM_MODEL_COMPONENT = "SimulationSystemModel";
 }

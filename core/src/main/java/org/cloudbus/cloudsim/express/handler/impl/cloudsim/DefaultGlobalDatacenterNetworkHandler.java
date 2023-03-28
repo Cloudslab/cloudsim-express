@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,11 +23,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.NetworkTopology;
+import org.cloudbus.cloudsim.express.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
-import org.cloudbus.cloudsim.express.handler.helper.InterZoneNetworkHelper;
 import org.cloudbus.cloudsim.express.handler.impl.BaseElementHandler;
+import org.cloudbus.cloudsim.express.handler.impl.CSVNetworkParser;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 import org.cloudbus.cloudsim.express.resolver.environment.definitions.model.GlobalDatacenterNetwork;
 
@@ -38,53 +38,40 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Creates and manages a CloudSim processing element.
+ * This class handles the {@link GlobalDatacenterNetwork} DTO.
  */
 public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
 
-    private static Logger logger = LogManager.getLogger(DefaultGlobalDatacenterNetworkHandler.class);
+    private static final Logger logger = LogManager.getLogger(DefaultGlobalDatacenterNetworkHandler.class);
 
-    protected GlobalDatacenterNetwork globalDatacenterNetworkDescription;
+    protected GlobalDatacenterNetwork networkDTO;
     protected List<ElementHandler> zoneHandlers;
 
     @Override
-    public void init(Object elementDescription, ExtensionsResolver extensionsResolver) {
+    public void init(Object componentDTO, ExtensionsResolver resolver) {
 
-        super.init(elementDescription, extensionsResolver);
-        this.globalDatacenterNetworkDescription = (GlobalDatacenterNetwork) elementDescription;
+        super.init(componentDTO, resolver);
+        this.networkDTO = (GlobalDatacenterNetwork) componentDTO;
     }
 
     @Override
     public void handle() {
 
-        try {
-            createZones();
-            createInterZoneNetworkInCloudSim();
-        } catch (Exception e) {
-            // TODO: 2022-03-28 handler error.
-            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
-        }
+        createZones();
+        createInterZoneNetworkInCloudSim();
     }
 
     @Override
     public boolean isSimulated() {
 
-        try {
-            zoneHandlers.forEach(ElementHandler::isSimulated);
-            getReturnedCloudletsInEachZone().forEach(this::performPostSimulationAnalysis);
-            return true;
-        } catch (Exception e) {
-            // TODO: 2022-03-29 handle exception
-            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
-        }
+        zoneHandlers.forEach(ElementHandler::isSimulated);
+        return true;
     }
 
     @Override
-    public boolean canHandle(Object elementDescription) {
+    public boolean canHandle(Object componentDTO) {
 
-        return elementDescription instanceof GlobalDatacenterNetwork;
+        return componentDTO instanceof GlobalDatacenterNetwork;
     }
 
     @Override
@@ -94,71 +81,60 @@ public class DefaultGlobalDatacenterNetworkHandler extends BaseElementHandler {
     }
 
     protected void createZones() {
+
         zoneHandlers = new ArrayList<>();
-        globalDatacenterNetworkDescription.getZones().forEach(zone -> {
+        networkDTO.getZones().forEach(zone -> {
             ElementHandler zoneHandler = getHandler(zone);
-            zoneHandler.init(zone, getExtensionsResolver());
+            zoneHandler.init(zone, getResolver());
             zoneHandler.handle();
             zoneHandlers.add(zoneHandler);
-            logger.atInfo()
-                    .log("Zone created: " + zoneHandler.getProperty(DefaultZoneHandler.KEY_ZONE_NAME));
+            logger.atInfo().log("Zone created: " + zoneHandler.getProperty(DefaultZoneHandler.KEY_ZONE_NAME));
         });
     }
 
     protected int getZoneId(String zoneName) {
 
         for (ElementHandler handler : zoneHandlers) {
-            String zoneNameOfHandler = (String) handler.getProperty(DefaultZoneHandler.KEY_ZONE_NAME);
-            if (StringUtils.equalsIgnoreCase(zoneName, zoneNameOfHandler)) {
+            String zoneNameFromHandler = (String) handler.getProperty(DefaultZoneHandler.KEY_ZONE_NAME);
+            if (StringUtils.equalsIgnoreCase(zoneName, zoneNameFromHandler)) {
                 return (Integer) handler.getProperty(DefaultZoneHandler.KEY_ZONE_ID);
             }
         }
-        throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR, "Could not find a matching zone handler for " +
-                "the zone: " + zoneName);
+        throw new CloudSimExpressRuntimeException(ErrorCode.MISSING_HANDLER, "Zone handler missing for " + zoneName);
     }
 
     protected void createInterZoneNetworkInCloudSim() {
 
         logger.atInfo().log("Crating Inter Zone network...");
-        File interZoneNetworkDescription = new File(
-                globalDatacenterNetworkDescription.getInterZoneNetworkDescriptionFilePath());
-        InterZoneNetworkHelper interZoneNetworkHelper = new InterZoneNetworkHelper(
-                interZoneNetworkDescription);
-        interZoneNetworkHelper.getLinks().forEach(link -> {
+        File networkInfo = new File(networkDTO.getInterZoneNetworkDescriptionFilePath());
+        CSVNetworkParser parser = new CSVNetworkParser(networkInfo);
+        parser.getLinks().forEach(link -> {
                     NetworkTopology.addLink(
-                            getZoneId(link.getZoneALabel()),
-                            getZoneId(link.getZoneBLabel()),
+                            getZoneId(link.getNodeALabel()),
+                            getZoneId(link.getNodeBLabel()),
                             link.getBandwidth(),
                             link.getLatency()
                     );
-                    logger.atDebug()
-                            .log(link.getZoneALabel() + " - " + link.getZoneBLabel() + " -> " + "Latency: "
-                                    + link.getLatency() + ", Bandwidth: " + link.getBandwidth());
+                    logger.atDebug().log(link.getNodeALabel() + " - " + link.getNodeBLabel() + " -> " + "Latency: "
+                            + link.getLatency() + ", Bandwidth: " + link.getBandwidth());
                 }
         );
-        logger.atInfo().log(
-                "Inter Zone network created with " + interZoneNetworkHelper.getLinks().size() + " links");
+        logger.atInfo().log("Inter Zone network created with " + parser.getLinks().size() + " links");
     }
 
-    protected Map<String, List<Cloudlet>> getReturnedCloudletsInEachZone() {
+    protected Map<String, List<Cloudlet>> getCompletedCloudlets() {
 
         Map<String, List<Cloudlet>> cloudlets = new HashMap<>();
         this.zoneHandlers.forEach(z -> {
-            Object returnedCloudletsProperty = z.getProperty(DefaultZoneHandler.RECEIVED_CLOUDLETS);
-            if (returnedCloudletsProperty == null) {
+            Object completedCloudlets = z.getProperty(DefaultZoneHandler.RECEIVED_CLOUDLETS);
+            if (completedCloudlets == null) {
                 return;
             }
             cloudlets.put(
                     (String) z.getProperty(DefaultZoneHandler.KEY_ZONE_NAME),
-                    (List<Cloudlet>) returnedCloudletsProperty
+                    (List<Cloudlet>) completedCloudlets
             );
         });
         return cloudlets;
-    }
-
-    protected void performPostSimulationAnalysis(String zoneName,
-                                                 List<Cloudlet> returnedCloudletList) {
-
-        // This method is available to perform any simulation specific analysis.
     }
 }

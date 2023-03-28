@@ -94,3 +94,5 @@ GlobalDatacenterNetwork:
       name: "REGIONAL_ZONE_SYDNEY"
     - <<: *Zone
       name: "REGIONAL_ZONE_SAOPAULO"
+SimulationSystemModel:
+  name: 'GlobalDatacenterNetwork'

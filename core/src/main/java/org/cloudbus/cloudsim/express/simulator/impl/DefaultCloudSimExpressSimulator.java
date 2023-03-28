@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@ package org.cloudbus.cloudsim.express.simulator.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.cloudbus.cloudsim.express.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.manager.ScenarioManager;
 import org.cloudbus.cloudsim.express.manager.SimulationManager;
@@ -32,6 +32,7 @@ import org.cloudbus.cloudsim.express.simulator.CloudSimExpressSimulator;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -39,6 +40,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * The DefaultCloudSimExpressSimulator represents the default simulator implementation.
+ */
 public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator {
 
     public static final String MODULE_SCENARIO_MANAGER = "module.scenario.manager";
@@ -46,7 +50,6 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
     public static final String MODULE_ENVIRONMENT_RESOLVER = "module.environment.resolver";
     public static final String FOLDER_EXTENSIONS = "folder.extensions";
     public static final String SIMULATION_SCENARIO_FILE = "simulation.scenario.file";
-    public static final String SIMULATION_SCENARIO_CLASS_NAME = "simulation.scenario.model.class";
     public static final String SIMULATION_OUTPUT_LOG_FOLDER = "simulation.output.log.folder";
     public static final String ELEMENT_HANDLER_PRIORITY_CLASS_PREFIX = "element.handler.priority.";
     private static final Logger logger = LogManager.getLogger(DefaultCloudSimExpressSimulator.class);
@@ -66,11 +69,10 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
         EnvironmentResolver environmentResolver = getEnvironmentResolver(props, extensionsResolver);
         logger.atInfo().log("Using Environment Resolver: " + environmentResolver.getClass());
 
-        ElementHandler simulationHandler = environmentResolver.getSimulationHandler();
-        logger.atInfo().log("Using Simulation Handler: " + simulationHandler.getClass());
+        ElementHandler systemModelHandler = environmentResolver.getSystemModelHandler();
+        logger.atInfo().log("Using Simulation Handler: " + systemModelHandler.getClass());
 
-        ScenarioManager scenarioManager = getScenarioManager(props, extensionsResolver,
-                simulationHandler);
+        ScenarioManager scenarioManager = getScenarioManager(props, extensionsResolver, systemModelHandler);
         logger.atInfo().log("Using Scenario Manager: " + scenarioManager.getClass());
 
         createAndInitSimulationManager(props, extensionsResolver, scenarioManager);
@@ -100,12 +102,12 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
                 new File(props.getProperty(SIMULATION_OUTPUT_LOG_FOLDER)));
     }
 
-    private ScenarioManager getScenarioManager(Properties props,
-                                               ExtensionsResolver extensionsResolver, ElementHandler simulationHandler) {
+    private ScenarioManager getScenarioManager(Properties props, ExtensionsResolver extensionsResolver,
+                                               ElementHandler systemModelHandler) {
 
         ScenarioManager scenarioManager = (ScenarioManager) extensionsResolver.getExtension(
                 props.getProperty(MODULE_SCENARIO_MANAGER), new Class[]{}, new Object[]{});
-        scenarioManager.init(simulationHandler);
+        scenarioManager.init(systemModelHandler);
         return scenarioManager;
     }
 
@@ -116,7 +118,6 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
                 props.getProperty(MODULE_ENVIRONMENT_RESOLVER), new Class[]{}, new Object[]{});
         environmentResolver.init(
                 new File(props.getProperty(SIMULATION_SCENARIO_FILE)),
-                props.getProperty(SIMULATION_SCENARIO_CLASS_NAME),
                 extensionsResolver
         );
         return environmentResolver;
@@ -140,12 +141,12 @@ public class DefaultCloudSimExpressSimulator implements CloudSimExpressSimulator
     private Properties loadProps(File configsFile) {
 
         Properties props = new Properties();
-        try(var reader = new FileReader(configsFile, StandardCharsets.UTF_8)) {
+        try (var reader = new FileReader(configsFile, StandardCharsets.UTF_8)) {
             props.load(reader);
-        } catch (Exception e) {
+        } catch (IOException e) {
             // TODO: 2022-03-28 handle error
-            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.FILE_OPERATION_ERROR,
+                    "Could not load configurations from " + configsFile, e);
         }
         return props;
     }

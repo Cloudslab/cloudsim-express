@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,15 +23,28 @@ import org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimula
 
 import java.io.File;
 
+/**
+ * The CloudSimExpressCLI represents a command line tool to execute the CloudSim Express.
+ */
 public class CloudSimExpressCLI {
 
     private static final CloudSimExpressCLI cloudSimExpressCLI = new CloudSimExpressCLI();
 
+    /**
+     * CloudSim Express CLI entry point.
+     *
+     * @param args External parameter list. First argument is the CloudSim Express configuration file.
+     */
     public static void main(String[] args) {
 
         cloudSimExpressCLI.run(args[0]);
     }
 
+    /**
+     * Executes CloudSim Express simulator.
+     *
+     * @param CloudSimExpressConfigFile CloudSim Express configuration file.
+     */
     public void run(String CloudSimExpressConfigFile) {
 
         CloudSimExpressSimulator simulator = new DefaultCloudSimExpressSimulator();

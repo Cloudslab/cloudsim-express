@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,17 +21,24 @@ package org.cloudbus.cloudsim.express.manager;
 import java.io.File;
 
 /**
- * Manages simulation execution.
+ * The SimulationManager executes the simulation. It uses {@link ScenarioManager} to build a scenario. Afterwards, it
+ * executes the simulation and waits for the completion.
+ * <p/>
+ * Typically, a SimulationManager uses a simulation platform,
+ * such as CloudSim. However, the interface is designed, such that internal implementation is completely in the hands
+ * of the developer.
+ *
+ * @see org.cloudbus.cloudsim.express.manager.impl.CloudSimSimulationManager
  */
 public interface SimulationManager {
 
     /**
-     * Initialize the component.
+     * Initialize the manager.
      *
-     * @param scenarioManager      The {@link SimulationManager}.
-     * @param simulationLogsFolder Specific folder to publish logs.
+     * @param scenarioManager The {@link ScenarioManager} that manages creation of the simulation scenario.
+     * @param logsFolder      The folder to publish logs.
      */
-    void init(ScenarioManager scenarioManager, File simulationLogsFolder);
+    void init(ScenarioManager scenarioManager, File logsFolder);
 
     /**
      * Executes the simulation.
@@ -39,9 +46,9 @@ public interface SimulationManager {
     void run();
 
     /**
-     * Blocks current thread until simulation completes.
+     * Waits for the completion of the scenario. This is a blocking call.
      *
-     * @return True, if the simulation completed as expected.
+     * @return True, if the simulation completed as expected. False, otherwise.
      */
     boolean waitForCompletion();
 }

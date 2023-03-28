@@ -1,4 +1,22 @@
 <?xml version="1.0"?>
+<!--
+  ~ cloudsim-express
+  ~ Copyright (C) 2023 CLOUDS Lab
+  ~
+  ~ This program is free software: you can redistribute it and/or modify
+  ~ it under the terms of the GNU General Public License as published by
+  ~ the Free Software Foundation, either version 3 of the License, or
+  ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
+  ~
+  ~ You should have received a copy of the GNU General Public License
+  ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
 <FindBugsFilter>
 
     <Match>
@@ -15,6 +33,10 @@
         <Or>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterCharacteristicsHandler"/>
+                <Field name="characteristicsDTO"/>
+            </And>
+            <And>
+                <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterCharacteristicsHandler"/>
                 <Field name="datacenterCharacteristics"/>
             </And>
             <And>
@@ -27,18 +49,18 @@
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultProcessingElementHandler"/>
-                <Field name="peList"/>
+                <Field name="processingElementsList"/>
             </And>
         </Or>
     </Match>
 
-    <!-- Set internal fields with false positive EI_EXPOSE_REP, because these fields are only used internally. -->
+    <!-- Set internal fields with false positive EI_EXPOSE_REP2, because these fields are only used internally. -->
     <Match>
         <Bug pattern="EI_EXPOSE_REP2"/>
         <Or>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterCharacteristicsHandler"/>
-                <Field name="datacenterCharacteristicsDescription"/>
+                <Field name="characteristicsDTO"/>
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler"/>
@@ -46,19 +68,19 @@
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler"/>
-                <Field name="datacenterDescription"/>
+                <Field name="datacenterDTO"/>
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultGlobalDatacenterNetworkHandler"/>
-                <Field name="globalDatacenterNetworkDescription"/>
+                <Field name="networkDTO"/>
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultHostHandler"/>
-                <Field name="hostDescription"/>
+                <Field name="hostDTO"/>
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultProcessingElementHandler"/>
-                <Field name="processingElementDescription"/>
+                <Field name="processingElementDTO"/>
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.resolver.impl.JARExtensionsResolver"/>
@@ -66,7 +88,7 @@
             </And>
             <And>
                 <Class name="org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultZoneHandler"/>
-                <Field name="zoneDescription"/>
+                <Field name="zoneDTO"/>
             </And>
         </Or>
     </Match>

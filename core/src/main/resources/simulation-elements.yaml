@@ -21,6 +21,12 @@ paths:
           description: "Not Implemented"
 components:
   schemas:
+    # 'SimulationSystemModel' is a reserved component that identifies the system model.
+    SimulationSystemModel:
+      type: object
+      properties:
+        name:
+          type: string
     GlobalDatacenterNetwork:
       type: object
       properties:

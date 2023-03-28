@@ -1,7 +1,7 @@
 #!/bin/bash
 #
-# CloudSim Express
-# Copyright (C) 2022  CloudsLab
+# cloudsim-express
+# Copyright (C) 2023 CLOUDS Lab
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@ cp ../../core/target/simulator-jar-with-dependencies.jar simulator.jar
 
 mkdir scenarios
 RESOURCE_DIRECTORY=core/src/main/resources
-cp ../../$RESOURCE_DIRECTORY/scenarios/geo-distributed-datacenter-network.yaml ./scenarios
+cp ../../$RESOURCE_DIRECTORY/scenarios/system-model.yaml ./scenarios
 
 mkdir extensions
 cp ../../extensions/target/cloudsim-express-extensions-$RELEASE_VERSION-SNAPSHOT.jar ./extensions/workload-generators-$RELEASE_VERSION.jar

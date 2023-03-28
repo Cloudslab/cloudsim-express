@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,29 +23,32 @@ import org.apache.logging.log4j.Logger;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.manager.ScenarioManager;
 
+/**
+ * This class represents a {@link ScenarioManager} implementation.
+ */
 public class DefaultScenarioManager implements ScenarioManager {
 
-    private static Logger logger = LogManager.getLogger(DefaultScenarioManager.class);
+    private static final Logger logger = LogManager.getLogger(DefaultScenarioManager.class);
 
-    ElementHandler scenarioElementHandler;
+    ElementHandler systemModelHandler;
 
     @Override
-    public void init(ElementHandler scenarioHandler) {
+    public void init(ElementHandler systemModelHandler) {
 
-        this.scenarioElementHandler = scenarioHandler;
+        this.systemModelHandler = systemModelHandler;
     }
 
     @Override
     public void build() {
 
-        logger.atInfo().log("Building the scenario using " + scenarioElementHandler.getClass());
-        scenarioElementHandler.handle();
+        logger.atInfo().log("Building the scenario using " + systemModelHandler.getClass());
+        systemModelHandler.handle();
     }
 
     @Override
     public boolean waitForScenarioCompletion() {
 
         logger.atInfo().log("Waiting for scenario to be completed...");
-        return scenarioElementHandler.isSimulated();
+        return systemModelHandler.isSimulated();
     }
 }
