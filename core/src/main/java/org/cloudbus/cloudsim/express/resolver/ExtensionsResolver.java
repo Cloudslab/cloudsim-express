@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,55 +25,79 @@ import java.io.File;
 import java.util.List;
 
 /**
- * The resolver which manages loading externally provided extensions.
+ * The ExtensionsResolver loads extensions required for the simulation. The extensions are packaged as jars, and
+ * available in a specific folder. The resolver loads them into the runtime, and provide APIs to create extension
+ * objects.
+ * <p/>
+ * It further capable of providing custom properties for extensions implementing
+ * {@link CloudSimExpressExtension} interface (See
+ * {@link #getExtension(String, Class[], Object[], List)}). This can be useful to configure extensions via simulation
+ * script file. For example, the following snippet shows an extended 'workloadGenerator', with two properties.
+ * <pre>{@code
+ * ...
+ * workloadGenerator:
+ *     variant:
+ *       className: "org.crunchycookie.research.distributed.computing.cloudsim.workload.impl.DummyWorkloadGenerator"
+ *       extensionProperties:
+ *         - key: "workloadPercentage"
+ *           value: "11"
+ *         - key: "isRandomPercentage"
+ *           value: "true"
+ * ...
+ * }</pre>
+ * If the extension implements the said interface, these two properties will be supplied to it during instantiation.
+ *
+ * @see org.cloudbus.cloudsim.express.resolver.impl.JARExtensionsResolver
  */
 public interface ExtensionsResolver {
 
     /**
-     * Initialize the component with the folder that has extensions, as well as the priorities of
-     * {@link ElementHandler} components.
+     * Initialize the resolver with the location of the extensions.
+     * <p/>
+     * The element handlers are a special case of extensions. Users can supply multiple element handlers, and specify
+     * the priority order in case there are multiple handlers for the same component. This priority order too, is
+     * supplied during initialization.
      *
-     * @param extensionsFolder                  Folder containing external extensions.
-     * @param elementHandlerClassesPriorityList Priority order of the available element handlers.
+     * @param extensionsFolder            Folder with extension jars.
+     * @param elementHandlerPriorityOrder A list in the order of priority of element handlers.
      */
-    void init(File extensionsFolder, List<String> elementHandlerClassesPriorityList);
+    void init(File extensionsFolder, List<String> elementHandlerPriorityOrder);
 
     /**
-     * Builds and returns an object of the given class and its constructor parameters.
+     * Creates and returns an extension object.
      *
-     * @param className                 The name of the class.
-     * @param constructorParameterTypes Data types of the constructor parameters.
-     * @param constructorParameters     Constructor parameters.
-     * @return The instantiated object.
+     * @param className                 Extension class name.
+     * @param constructorParameterTypes Data types of the constructor's formal parameters.
+     * @param constructorParameters     Arguments for the constructor's formal parameters.
+     * @return The created extension object.
      */
-    Object getExtension(String className, Class<?>[] constructorParameterTypes,
-                        Object[] constructorParameters);
+    Object getExtension(String className, Class<?>[] constructorParameterTypes, Object[] constructorParameters);
 
     /**
-     * Builds and returns an object of the given class and its constructor parameters. If the object is an instance of
-     * {@link org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension}, then the provided
+     * Creates and returns an extension object. If the object is an instance of
+     * {@link CloudSimExpressExtension}, then the provided
      * extension properties are also supplied via
-     * {@link org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension#setProperties(List)}.
+     * {@link CloudSimExpressExtension#setProperties(List)}.
      *
-     * @param className                 The name of the class.
-     * @param constructorParameterTypes Data types of the constructor parameters.
-     * @param constructorParameters     Constructor parameters.
-     * @param extensionProperties       The properties for the {@link org.cloudbus.cloudsim.express.resolver.impl.helper.CloudSimExpressExtension}.
-     * @return The instantiated object.
+     * @param className                 Extension class name.
+     * @param constructorParameterTypes Data types of the constructor's formal parameters.
+     * @param constructorParameters     Arguments for the constructor's formal parameters.
+     * @param extensionProperties       The properties for the {@link CloudSimExpressExtension}.
+     * @return The created extension object.
      */
-    Object getExtension(String className, Class<?>[] constructorParameterTypes,
-                        Object[] constructorParameters, List<Pair<String, String>> extensionProperties);
+    Object getExtension(String className, Class<?>[] constructorParameterTypes, Object[] constructorParameters,
+                        List<Pair<String, String>> extensionProperties);
 
     /**
-     * Returns the corresponding class for the given class name.
+     * Returns the extension class for the extension class name.
      *
-     * @param className The name of the class.
+     * @param className Extension class name.
      * @return The class.
      */
     Class<?> getExtensionClass(String className);
 
     /**
-     * Returns the registered {@link ElementHandler}s.
+     * Returns prioritized {@link ElementHandler}s.
      *
      * @return The list of {@link ElementHandler}s in their priority order.
      */

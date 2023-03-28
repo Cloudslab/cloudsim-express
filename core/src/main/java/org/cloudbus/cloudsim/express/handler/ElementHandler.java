@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,54 +21,89 @@ package org.cloudbus.cloudsim.express.handler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 
 /**
- * Handles an element for the simulation.
+ * The ElementHandler interface defines a handler that converts a simulation component written in human-readable
+ * scripting language, to a simulation implementation for CloudSim, that is written in Java. For example, a datacenter
+ * description written in YAML might look like this.
+ * <pre>{@code
+ *      ...
+ *      Datacenter: &Datacenter
+ *          variant:
+ *              className: "org.cloudbus.cloudsim.Datacenter"
+ *          characteristics: *Characteristics
+ *          vmAllocationPolicy:
+ *              className: "org.cloudbus.cloudsim.VmAllocationPolicySimple"
+ *          storage: ""
+ *          schedulingInterval: 0
+ *      ...
+ * }</pre>
+ * The corresponding CloudSim implementation in Java partially looks similar to the one below.
+ * <pre>{@code
+ *      ...
+ * 		DatacenterCharacteristics characteristics = new DatacenterCharacteristics(
+ * 				arch, os, vmm, hostList, time_zone, cost, costPerMem,
+ * 				costPerStorage, costPerBw);
+ * 		Datacenter datacenter = null;
+ * 		try {
+ * 			datacenter = new Datacenter(name, characteristics, new VmAllocationPolicySimple(hostList), storageList, 0);
+ *      } catch (Exception e) {
+ *          e.printStackTrace();
+ *      }
+ *      ...
+ * }</pre>
+ * A handler implementing this interface is responsible to perform such conversions.
+ * <p/>
+ * <p>Usage:</p>
  * <p>
- * Scenarios are composed of multiple elements that are defined in the definition files. For
- * example, geo-distributed datacenter network is a composition of multiple regional zones. Also,
- * different scenarios share same elements but with different compositions. Each such element needs to have a handler,
- * that is responsible for how the element is handled in the simulation. See
- * {@link org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler} or any other default
- * implementations for references.
+ * Before using a simulation component in the script file (i.e. 'system-model.yaml'), the schematic of this component
+ * (such as attributes and associated data types, etc) is defined in the 'simulation-elements.yaml' file. Afterwards,
+ * a corresponding handler is implemented to convert scripted information to a Java-based CloudSim implementation
+ * (available in the 'org.cloudbus.cloudsim.express.resolver.environment.definitions.model' package).
+ * </p>
  *
- * @see org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler
+ * @see org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultGlobalDatacenterNetworkHandler
  */
 public interface ElementHandler {
 
     /**
-     * Initialize the component with the human-readable description.
+     * Initialize the handler with simulation component information.
      *
-     * @param elementDescription Element description from the simulation scenario YAML file.
-     * @param extensionsResolver Extensions resolver, that create any dependant extensions required.
+     * @param componentDTO Simulation component DTO parsed from the scripted file.
+     * @param resolver     {@link ExtensionsResolver} that creates objects from extension classes.
      */
-    void init(Object elementDescription, ExtensionsResolver extensionsResolver);
+    void init(Object componentDTO, ExtensionsResolver resolver);
 
     /**
-     * Perform the logic on handling the element.
+     * Converts simulation component into a CloudSim implementation.
      *
-     * @see org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterHandler
+     * @see org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultGlobalDatacenterNetworkHandler
      */
     void handle();
 
     /**
-     * Returns whether this element has completed the simulation.
+     * Returns whether the handler's CloudSim implementation completed the simulation. If the CloudSim implementation
+     * is not able to obtain that information, this method throws a
+     * {@link org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException} with a specific
+     * {@link org.cloudbus.cloudsim.express.constants.ErrorConstants.ErrorCode#ELEMENT_NOT_AWARE_OF_SIMULATION} error
+     * code.
      *
-     * @return True is the element has completed its simulation, False otherwise.
+     * @return True if the CloudSim implementation has completed its simulation, False otherwise.
      */
     boolean isSimulated();
 
     /**
-     * Checks whether this handler is able to handle the provided element.
+     * Returns if this handler is able to handle the provided simulation component DTO.
      *
-     * @param elementDescription Element description from the simulation scenario YAML file.
-     * @return True, if the element can be handled. False, otherwise.
+     * @param componentDTO Simulation component DTO parsed from the scripted file.
+     * @return True, if the component can be handled. False, otherwise.
      */
-    boolean canHandle(Object elementDescription);
+    boolean canHandle(Object componentDTO);
 
     /**
-     * Returns any requested information.
+     * Returns additional information. This API allows external components to obtain any use case specific information
+     * from the handler.
      *
-     * @param key A key of the property. Maintaining the key is a responsibility of the developer.
-     * @return Corresponding information.
+     * @param key The identifier to the property.
+     * @return The property.
      */
     Object getProperty(String key);
 }

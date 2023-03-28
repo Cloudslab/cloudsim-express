@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,16 @@
 
 package org.cloudbus.cloudsim.express.exceptions;
 
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
+import org.cloudbus.cloudsim.express.constants.ErrorConstants.ErrorCode;
 
+/**
+ * This exception is thrown when CloudSim Express execution is interrupted during the simulation time due to an
+ * unexpected error. For example,
+ * <ul>
+ *     <li> Error reading a configuration file</li>
+ *     <li> Incorrect scripting</li>
+ * <ul/>
+ */
 public class CloudSimExpressRuntimeException extends RuntimeException {
 
     private ErrorCode code;

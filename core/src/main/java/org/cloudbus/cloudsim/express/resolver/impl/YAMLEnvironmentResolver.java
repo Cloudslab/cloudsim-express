@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +19,13 @@
 package org.cloudbus.cloudsim.express.resolver.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.cloudbus.cloudsim.express.constants.ErrorConstants;
+import org.cloudbus.cloudsim.express.constants.ScriptConstants;
 import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.resolver.EnvironmentResolver;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
+import org.cloudbus.cloudsim.express.resolver.environment.definitions.model.SimulationSystemModel;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -32,58 +34,71 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+/**
+ * The YAMLEnvironmentResolver class represents a resolver that parses human-readable simulation script file written
+ * in YAML.
+ */
 public class YAMLEnvironmentResolver implements EnvironmentResolver {
 
-    ElementHandler simulationHandler;
+    public static final String MODEL_CLASS_NAME_PREFIX = "org.cloudbus.cloudsim.express.resolver.environment.definitions.model.";
+
+    // SystemModelHandler is a special case of an element handler, which corresponds to the DTO that describes the
+    // system model of the entire simulation.
+    ElementHandler systemModelHandler;
 
     @Override
-    public void init(File simulationScenarioDescription, String simulationScenarioModelClassName,
-                     ExtensionsResolver extensionsResolver) {
+    public void init(File simulationScript, ExtensionsResolver extensionsResolver) {
 
-        Object simulationScenarioModel;
-        try (var in = new FileInputStream(simulationScenarioDescription)) {
-            simulationScenarioModel = getSimulationElementFromYAML(simulationScenarioModelClassName, in);
+        Object systemModelDTO;
+        try (var stream = new FileInputStream(simulationScript)) {
+            systemModelDTO = getSystemModelFromScript(stream);
         } catch (ClassNotFoundException e) {
-            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                    "Could not find the specified class for the simulation scenario: " + simulationScenarioModelClassName, e);
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.SCRIPT_ERROR,
+                    "Could not obtain system model due to a missing class", e);
         } catch (IOException e) {
-            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR,
-                    "Could not process the simulation scenario description file: " + simulationScenarioDescription, e);
+            throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.SCRIPT_ERROR,
+                    "Could not read the script file: " + simulationScript, e);
         }
 
         // Initialize corresponding scenario handler.
-        initHandler(extensionsResolver, simulationScenarioModel);
+        initHandler(extensionsResolver, systemModelDTO);
     }
 
     @Override
-    public ElementHandler getSimulationHandler() {
+    public ElementHandler getSystemModelHandler() {
 
-        return this.simulationHandler;
+        return this.systemModelHandler;
     }
 
-    private void initHandler(ExtensionsResolver extensionsResolver, Object simulationElement) {
+    private void initHandler(ExtensionsResolver extensionsResolver, Object systemModelDTO) {
 
         extensionsResolver.getElementHandlers().stream()
-                .filter(handler -> handler.canHandle(simulationElement))
+                .filter(handler -> handler.canHandle(systemModelDTO))
                 .findFirst()
                 .ifPresentOrElse(handler -> {
-                    handler.init(simulationElement, extensionsResolver);
-                    this.simulationHandler = handler;
+                    handler.init(systemModelDTO, extensionsResolver);
+                    this.systemModelHandler = handler;
                 }, () -> {
-                    throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.UNKNOWN_ERROR, "Could not find a handler for the simulation model: " + simulationElement.getClass());
+                    throw new CloudSimExpressRuntimeException(ErrorConstants.ErrorCode.MISSING_HANDLER,
+                            "Could not find a handler for the component: " + systemModelDTO.getClass());
                 });
     }
 
-    private Object getSimulationElementFromYAML(String scenarioClassName, InputStream input)
-            throws ClassNotFoundException {
+    private Object getSystemModelFromScript(InputStream scriptFileStream) throws ClassNotFoundException {
 
-        Object simulationElement;
+        Object systemModelDTO;
         Yaml yaml = new Yaml();
-        Map<String, Object> obj = yaml.load(input);
+        Map<String, Object> obj = yaml.load(scriptFileStream);
         ObjectMapper mapper = new ObjectMapper();
 
-        Class<?> cls = Class.forName(scenarioClassName);
-        simulationElement = mapper.convertValue(obj.get(cls.getSimpleName()), cls);
-        return simulationElement;
+        // Capture system model information through the reserved component.
+        SimulationSystemModel systemModelInformationDTO = mapper.convertValue(
+                obj.get(ScriptConstants.SIMULATION_SYSTEM_MODEL_COMPONENT),
+                SimulationSystemModel.class
+        );
+
+        Class<?> cls = Class.forName(MODEL_CLASS_NAME_PREFIX + systemModelInformationDTO.getName());
+        systemModelDTO = mapper.convertValue(obj.get(cls.getSimpleName()), cls);
+        return systemModelDTO;
     }
 }

@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,6 @@ import org.cloudbus.cloudsim.Cloudlet;
 import org.cloudbus.cloudsim.Datacenter;
 import org.cloudbus.cloudsim.DatacenterBroker;
 import org.cloudbus.cloudsim.Vm;
-import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.handler.impl.BaseElementHandler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
@@ -36,7 +34,7 @@ import org.crunchycookie.research.distributed.computing.cloudsim.workload.CloudS
 import java.util.List;
 
 /**
- * Creates and manages a CloudSim processing element.
+ * This class handles the {@link Zone} DTO.
  */
 public class DefaultZoneHandler extends BaseElementHandler {
 
@@ -44,67 +42,53 @@ public class DefaultZoneHandler extends BaseElementHandler {
     public static final String KEY_ZONE_NAME = "ZONE_NAME";
     public static final String RECEIVED_CLOUDLETS = "RECEIVED_CLOUDLETS";
 
-    protected Zone zoneDescription;
+    protected Zone zoneDTO;
     protected int zoneId;
     protected String name;
     protected DatacenterBroker broker;
-    protected CloudSimWorkloadGenerator workloadGenerator;
+    protected CloudSimWorkloadGenerator generator;
     protected Datacenter datacenter;
 
-    protected List<Cloudlet> receivedCloudlets;
+    protected List<Cloudlet> completedCloudlets;
 
     @Override
-    public void init(Object elementDescription, ExtensionsResolver extensionsResolver) {
+    public void init(Object componentDTO, ExtensionsResolver resolver) {
 
-        super.init(elementDescription, extensionsResolver);
-        this.zoneDescription = (Zone) elementDescription;
+        super.init(componentDTO, resolver);
+        this.zoneDTO = (Zone) componentDTO;
     }
 
     @Override
     public void handle() {
 
-        try {
-            this.name = zoneDescription.getName();
+        this.name = zoneDTO.getName();
+        this.generator = getWorkloadGenerator();
+        this.broker = getBroker();
+        this.datacenter = getDatacenter();
 
-            this.workloadGenerator = initAndGetWorkloadGenerator();
-            this.broker = getBroker();
-            this.datacenter = getDatacenter();
+        List<Cloudlet> cloudletList = generator.getCloudletsList();
+        cloudletList.forEach(cloudlet -> cloudlet.setUserId(broker.getId()));
+        // // TODO: 27/3/23 Broker ID should be handled by the zone handler, rather than passing it to the generator.
+        List<Vm> vmList = generator.getVmList(broker.getId());
 
-            // Create a set of VMs equal to the number of cloudlets.
-            // // TODO: 27/3/23 Broker ID should be handled by the zone handler, rather than passing it to the generator.
-            List<Vm> vmList = workloadGenerator.getVmList(broker.getId());
-
-            // Obtain cloudlet list meant for the zone.
-            List<Cloudlet> cloudletList = workloadGenerator.getCloudletsList();
-            cloudletList.forEach(cloudlet -> cloudlet.setUserId(broker.getId()));
-
-            // Submit to the broker.
-            broker.submitVmList(vmList);
-            broker.submitCloudletList(cloudletList);
-        } catch (Exception e) {
-            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
-            // TODO: 2022-03-28 handler error.
-        }
+        // Submit to the broker.
+        broker.submitVmList(vmList);
+        broker.submitCloudletList(cloudletList);
     }
 
     @Override
     public boolean isSimulated() {
 
-        try {
-            this.receivedCloudlets = this.broker.getCloudletReceivedList();
-            return true;
-        } catch (Exception e) {
-            // TODO: 2022-03-29 handle error
-            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
-        }
+        // A blocking operation.
+        this.completedCloudlets = this.broker.getCloudletReceivedList();
+
+        return true;
     }
 
     @Override
-    public boolean canHandle(Object elementDescription) {
+    public boolean canHandle(Object componentDTO) {
 
-        return elementDescription instanceof Zone;
+        return componentDTO instanceof Zone;
     }
 
     @Override
@@ -113,43 +97,46 @@ public class DefaultZoneHandler extends BaseElementHandler {
         return switch (key) {
             case KEY_ZONE_ID -> this.zoneId;
             case KEY_ZONE_NAME -> this.name;
-            case RECEIVED_CLOUDLETS -> this.receivedCloudlets;
+            case RECEIVED_CLOUDLETS -> this.completedCloudlets;
             default -> null;
         };
     }
 
-    protected CloudSimWorkloadGenerator initAndGetWorkloadGenerator() {
+    protected CloudSimWorkloadGenerator getWorkloadGenerator() {
 
-        WorkloadGenerator workloadGeneratorDescription = zoneDescription.getWorkloadGenerator();
-        Extension workloadGeneratorVariant = workloadGeneratorDescription.getVariant();
-        CloudSimWorkloadGenerator workloadGenerator = (CloudSimWorkloadGenerator) this.getExtensionsResolver()
-                .getExtension(
-                        workloadGeneratorVariant.getClassName(),
-                        new Class[]{},
-                        new Object[]{},
-                        getExtensionProperties(workloadGeneratorVariant)
-                );
-        return workloadGenerator;
+        WorkloadGenerator generatorDTO = zoneDTO.getWorkloadGenerator();
+        Extension generatorVariant = generatorDTO.getVariant();
+        return (CloudSimWorkloadGenerator) this.getResolver().getExtension(
+                generatorVariant.getClassName(),
+                new Class[]{},
+                new Object[]{},
+                getExtensionProperties(generatorVariant)
+        );
     }
 
     protected DatacenterBroker getBroker() {
-        Broker brokerDescription = zoneDescription.getBroker();
-        return (DatacenterBroker) this.getExtensionsResolver().getExtension(
-                brokerDescription.getVariant().getClassName(),
+
+        Broker brokerDTO = zoneDTO.getBroker();
+        Extension brokerVariant = brokerDTO.getVariant();
+        return (DatacenterBroker) this.getResolver().getExtension(
+                brokerVariant.getClassName(),
                 new Class[]{String.class},
-                new Object[]{brokerDescription.getName()},
-                getExtensionProperties(brokerDescription.getVariant())
+                new Object[]{brokerDTO.getName()},
+                getExtensionProperties(brokerVariant)
         );
     }
 
     protected Datacenter getDatacenter() {
 
-        ElementHandler datacenterHandler = getHandler(zoneDescription.getDatacenter());
-        datacenterHandler.init(zoneDescription.getDatacenter(), this.extensionsResolver);
-        datacenterHandler.handle();
-        org.cloudbus.cloudsim.Datacenter datacenter = (org.cloudbus.cloudsim.Datacenter) datacenterHandler.getProperty(
-                DefaultDatacenterHandler.KEY_DATACENTER);
+        ElementHandler handler = getHandler(zoneDTO.getDatacenter());
+        handler.init(zoneDTO.getDatacenter(), this.resolver);
+        handler.handle();
+
+        org.cloudbus.cloudsim.Datacenter datacenter = (org.cloudbus.cloudsim.Datacenter) handler.getProperty(
+                DefaultDatacenterHandler.KEY_DATACENTER
+        );
         this.zoneId = datacenter.getId();
+
         return datacenter;
     }
 }

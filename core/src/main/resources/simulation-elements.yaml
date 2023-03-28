@@ -1,22 +1,14 @@
-# ****** CloudSim Simulation System Architecture Description File *******
-# This file describes the system architecture of the datacenter network, for CloudSim simulation.
-
-# Describes extendable element and the specific name of the extension to use. For example, if there
-# is an extended datacenter broker to be used, this element describes the extension class.
-
-# Definition file is open api3.
-#
-# Platform: If someone wants to use a standard existing scenario(Geo distributed datacenter
-# network), but use custom extension points(provisioners, datacenters, etc), they can dynamically
-# use the definition file. If someone wants to write a custom scenario, they need to write handlers
-# for any new component introduced, generate DTOs, and write a scenario manager for the new scenario.
-# And define in the definition file. They do not need to implement the scenario as a whole in java
-# because the low code simulation has modularized the simulation scenario process.
 openapi: "3.0.0"
 info:
-  description: "CloudSim Express: Low code simulation service"
-  version: "0.1.0"
-  title: "CloudSim Express: Low code simulation"
+  title: "Building Blocks for CloudSim Express"
+  description: "This document provides schema definitions for simulation components. For example, it defines a global
+   datacenter network, which has a set of zones, and an inter-zone network. It then continues to define rest of the 
+   components of global datacenter network in a top-down approach, such as a zone made up with a broker and a 
+   datacenter, etc. The definitions in this document are available for CloudSim Express users to script their scenarios.
+   Concretely, if the user A designs a datacenter network with five zones, and the user B designs a datacenter network
+   with three zones, both these users can use the global datacenter network component definition. For a specific 
+   component that is not present with CloudSim Express, can be easily added by defining its schematic in this document."
+  version: "0.1-SNAPSHOT"
   license:
     name: "gpl-3.0"
     url: "https://www.gnu.org/licenses/gpl-3.0.en.html"
@@ -29,6 +21,12 @@ paths:
           description: "Not Implemented"
 components:
   schemas:
+    # 'SimulationSystemModel' is a reserved component that identifies the system model.
+    SimulationSystemModel:
+      type: object
+      properties:
+        name:
+          type: string
     GlobalDatacenterNetwork:
       type: object
       properties:

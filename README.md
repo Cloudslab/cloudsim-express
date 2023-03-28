@@ -1,4 +1,4 @@
-# CloudSimExpress: Low-Code Simulations with CloudSim Toolkit
+# CloudSim Express: From Code, To Script
 
 CloudSim toolkit is designed to be used as a Java library. Let's take a look at how a simple CloudSim simulation
 scenario take

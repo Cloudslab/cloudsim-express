@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.cloudbus.cloudsim.Log;
 import org.cloudbus.cloudsim.core.CloudSim;
+import org.cloudbus.cloudsim.express.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.manager.ScenarioManager;
 import org.cloudbus.cloudsim.express.manager.SimulationManager;
 
@@ -36,17 +36,20 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Calendar;
 
+/**
+ * This class represents a {@link SimulationManager} that executes simulation via CloudSim toolkit.
+ */
 public class CloudSimSimulationManager implements SimulationManager {
 
-    private static Logger logger = LogManager.getLogger(CloudSimSimulationManager.class);
+    private static final Logger logger = LogManager.getLogger(CloudSimSimulationManager.class);
 
     ScenarioManager scenarioManager;
 
     @Override
-    public void init(ScenarioManager scenarioManager, File simulationLogsFolder) {
+    public void init(ScenarioManager scenarioManager, File logsFolder) {
 
         this.scenarioManager = scenarioManager;
-        initializeCloudSim(getOutputStreamForSimulationLogs(simulationLogsFolder));
+        initializeCloudSim(getOutputStreamForLogs(logsFolder));
     }
 
     @Override
@@ -59,6 +62,7 @@ public class CloudSimSimulationManager implements SimulationManager {
     public void run() {
 
         // Build the scenario with CloudSim.
+        logger.atInfo().log("Building the scenario");
         scenarioManager.build();
 
         logger.atInfo().log("Starting CloudSim simulation");
@@ -70,9 +74,9 @@ public class CloudSimSimulationManager implements SimulationManager {
         logger.atInfo().log("CloudSim Simulation is completed");
     }
 
-    private OutputStream getOutputStreamForSimulationLogs(File simulationLogsFolder) {
+    private OutputStream getOutputStreamForLogs(File simulationLogsFolder) {
 
-        OutputStream simulationLogsFileOutputStream;
+        OutputStream logsOutputStream;
         try {
             if (simulationLogsFolder != null && simulationLogsFolder.isDirectory()) {
                 Files.createDirectories(Path.of(simulationLogsFolder.getAbsolutePath()));
@@ -83,15 +87,14 @@ public class CloudSimSimulationManager implements SimulationManager {
             if (!isFileNewlyCreated) {
                 throw new IOException("A simulation log file with the name: " + simulationLogsFile.getName() + " already exists");
             }
-            simulationLogsFileOutputStream = new FileOutputStream(simulationLogsFile);
+            logsOutputStream = new FileOutputStream(simulationLogsFile);
         } catch (IOException e) {
-            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
-                    "Unable to create the log file", e);
+            throw new CloudSimExpressRuntimeException(ErrorCode.FILE_OPERATION_ERROR, "Could not create the log file", e);
         }
-        return simulationLogsFileOutputStream;
+        return logsOutputStream;
     }
 
-    private void initializeCloudSim(OutputStream simulationLogsFileOutputStream) {
+    private void initializeCloudSim(OutputStream logsOutputStream) {
 
         // First step: Initialize the CloudSim package. It should be called
         // before creating any entities.
@@ -103,6 +106,6 @@ public class CloudSimSimulationManager implements SimulationManager {
 
         CloudSim.init(num_user, calendar, trace_flag);
 
-        Log.setOutput(simulationLogsFileOutputStream);
+        Log.setOutput(logsOutputStream);
     }
 }

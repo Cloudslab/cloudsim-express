@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package org.cloudbus.cloudsim.express.handler.impl;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+import org.cloudbus.cloudsim.express.constants.ScriptConstants;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
 import org.cloudbus.cloudsim.express.resolver.environment.definitions.model.Extension;
@@ -29,29 +30,35 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * Implement common functionalities of most elements.
+ * The BaseElementHandler is an abstract class that implements common functionalities used across most classes that
+ * implements {@link ElementHandler}.
+ * <p>
+ * Such as storing the {@link ExtensionsResolver}, Utility methods to validate IDs, and managing properties.
+ * <p>
+ * <p/>
+ * <p>
+ * Usage:
+ * Any new implementation of {@link ElementHandler} is advised to extend the {@link BaseElementHandler}.
  */
 public abstract class BaseElementHandler implements ElementHandler {
 
-    public static final String AUTOGENERATE_ID_SYMBOL = "-1";
-
-    protected ExtensionsResolver extensionsResolver;
+    protected ExtensionsResolver resolver;
 
     @Override
-    public void init(Object elementDescription, ExtensionsResolver extensionsResolver) {
+    public void init(Object componentDTO, ExtensionsResolver resolver) {
 
-        this.extensionsResolver = extensionsResolver;
+        this.resolver = resolver;
     }
 
-    protected ElementHandler getHandler(Object elementDescription) {
+    protected ElementHandler getHandler(Object componentDTO) {
 
-        return extensionsResolver.getElementHandlers().stream()
-                .filter(handler -> handler.canHandle(elementDescription)).findFirst().get();
+        return resolver.getElementHandlers().stream()
+                .filter(handler -> handler.canHandle(componentDTO)).findFirst().get();
     }
 
-    protected ExtensionsResolver getExtensionsResolver() {
+    protected ExtensionsResolver getResolver() {
 
-        return this.extensionsResolver;
+        return this.resolver;
     }
 
     protected String getPropertyValue(List<Property> props, String key) {
@@ -60,7 +67,7 @@ public abstract class BaseElementHandler implements ElementHandler {
     }
 
     protected boolean isIdIncrementing(String id) {
-        return AUTOGENERATE_ID_SYMBOL.equals(id);
+        return ScriptConstants.AUTOGENERATE_ID_SYMBOL.equals(id);
     }
 
     protected List<Pair<String, String>> getExtensionProperties(Extension extension) {

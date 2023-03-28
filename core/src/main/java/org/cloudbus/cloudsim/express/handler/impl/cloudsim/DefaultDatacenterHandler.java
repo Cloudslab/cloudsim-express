@@ -1,6 +1,6 @@
 /*
- * CloudSim Express
- * Copyright (C) 2022  CloudsLab
+ * cloudsim-express
+ * Copyright (C) 2023 CLOUDS Lab
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,7 +22,6 @@ import org.cloudbus.cloudsim.Host;
 import org.cloudbus.cloudsim.Storage;
 import org.cloudbus.cloudsim.VmAllocationPolicy;
 import org.cloudbus.cloudsim.express.exceptions.CloudSimExpressRuntimeException;
-import org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode;
 import org.cloudbus.cloudsim.express.handler.ElementHandler;
 import org.cloudbus.cloudsim.express.handler.impl.BaseElementHandler;
 import org.cloudbus.cloudsim.express.resolver.ExtensionsResolver;
@@ -32,61 +31,56 @@ import org.cloudbus.cloudsim.express.resolver.environment.definitions.model.Exte
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.cloudbus.cloudsim.express.exceptions.constants.ErrorConstants.ErrorCode.ELEMENT_NOT_AWARE_OF_SIMULATION;
+import static org.cloudbus.cloudsim.express.constants.ErrorConstants.ErrorCode.ELEMENT_NOT_AWARE_OF_SIMULATION;
 
 /**
- * Creates and manages a CloudSim processing element.
+ * This class handles the {@link Datacenter} DTO.
  */
 public class DefaultDatacenterHandler extends BaseElementHandler {
 
     public static final String KEY_DATACENTER = "DATACENTER";
 
-    protected Datacenter datacenterDescription;
+    protected Datacenter datacenterDTO;
     protected org.cloudbus.cloudsim.Datacenter datacenter;
 
     @Override
-    public void init(Object elementDescription, ExtensionsResolver extensionsResolver) {
+    public void init(Object componentDTO, ExtensionsResolver resolver) {
 
-        super.init(elementDescription, extensionsResolver);
-        this.datacenterDescription = (Datacenter) elementDescription;
+        super.init(componentDTO, resolver);
+        this.datacenterDTO = (Datacenter) componentDTO;
     }
 
     @Override
     public void handle() {
 
-        try {
-            Extension datacenterVariant = datacenterDescription.getVariant();
+        Extension datacenterVariant = datacenterDTO.getVariant();
 
-            String name = datacenterDescription.getName();
+        String name = datacenterDTO.getName();
 
-            org.cloudbus.cloudsim.DatacenterCharacteristics characteristics = getDatacenterCharacteristics();
-            List<Host> hostList = characteristics.getHostList();
+        org.cloudbus.cloudsim.DatacenterCharacteristics characteristics = getDatacenterCharacteristics();
+        List<Host> hostList = characteristics.getHostList();
 
-            VmAllocationPolicy vmAllocationPolicy = getVmAllocationPolicy(hostList);
+        VmAllocationPolicy vmAllocationPolicy = getVmAllocationPolicy(hostList);
 
-            LinkedList<Storage> storageList = new LinkedList<>();
-            int schedulingInterval = datacenterDescription.getSchedulingInterval();
+        LinkedList<Storage> storageList = new LinkedList<>();
+        int schedulingInterval = datacenterDTO.getSchedulingInterval();
 
-            createDatacenter(datacenterVariant, name, characteristics, vmAllocationPolicy, storageList,
-                    schedulingInterval);
-        } catch (Exception e) {
-            // TODO: 2022-03-28 handler error.
-            throw new CloudSimExpressRuntimeException(ErrorCode.UNKNOWN_ERROR,
-                    "Please refer to the stacktrace", e);
-        }
+        createDatacenter(datacenterVariant, name, characteristics, vmAllocationPolicy, storageList,
+                schedulingInterval);
     }
 
     @Override
     public boolean isSimulated() {
 
+        // Datacenter itself cannot be simulated.
         throw new CloudSimExpressRuntimeException(ELEMENT_NOT_AWARE_OF_SIMULATION,
-                "Cannot perform this task at this level. Please use a higher level element to handle this scenario");
+                "Cannot simulate a " + KEY_DATACENTER + ". Please use a higher level component");
     }
 
     @Override
-    public boolean canHandle(Object elementDescription) {
+    public boolean canHandle(Object componentDTO) {
 
-        return elementDescription instanceof Datacenter;
+        return componentDTO instanceof Datacenter;
     }
 
     @Override
@@ -102,7 +96,8 @@ public class DefaultDatacenterHandler extends BaseElementHandler {
                                     org.cloudbus.cloudsim.DatacenterCharacteristics characteristics,
                                     VmAllocationPolicy vmAllocationPolicy, LinkedList<Storage> storageList,
                                     int schedulingInterval) {
-        datacenter = (org.cloudbus.cloudsim.Datacenter) this.extensionsResolver.getExtension(
+
+        datacenter = (org.cloudbus.cloudsim.Datacenter) this.resolver.getExtension(
                 datacenterVariant.getClassName(),
                 new Class[]{String.class, org.cloudbus.cloudsim.DatacenterCharacteristics.class,
                         VmAllocationPolicy.class, List.class, double.class},
@@ -112,23 +107,23 @@ public class DefaultDatacenterHandler extends BaseElementHandler {
     }
 
     protected VmAllocationPolicy getVmAllocationPolicy(List<Host> hostList) {
-        Extension vmAllocationPolicyExtension = datacenterDescription.getVmAllocationPolicy();
-        VmAllocationPolicy vmAllocationPolicy = (VmAllocationPolicy) this.extensionsResolver.getExtension(
-                vmAllocationPolicyExtension.getClassName(),
+
+        Extension allocationPolicyVariant = datacenterDTO.getVmAllocationPolicy();
+        return (VmAllocationPolicy) this.resolver.getExtension(
+                allocationPolicyVariant.getClassName(),
                 new Class[]{List.class},
                 new Object[]{hostList},
-                getExtensionProperties(vmAllocationPolicyExtension)
+                getExtensionProperties(allocationPolicyVariant)
         );
-        return vmAllocationPolicy;
     }
 
     protected org.cloudbus.cloudsim.DatacenterCharacteristics getDatacenterCharacteristics() {
-        ElementHandler characteristicsHandler = getHandler(datacenterDescription.getCharacteristics());
-        characteristicsHandler.init(datacenterDescription.getCharacteristics(),
-                this.extensionsResolver);
+
+        ElementHandler characteristicsHandler = getHandler(datacenterDTO.getCharacteristics());
+        characteristicsHandler.init(datacenterDTO.getCharacteristics(),
+                this.resolver);
         characteristicsHandler.handle();
-        org.cloudbus.cloudsim.DatacenterCharacteristics characteristics = (org.cloudbus.cloudsim.DatacenterCharacteristics) characteristicsHandler.getProperty(
+        return (org.cloudbus.cloudsim.DatacenterCharacteristics) characteristicsHandler.getProperty(
                 DefaultDatacenterCharacteristicsHandler.KEY_DATACENTER_CHARACTERISTICS);
-        return characteristics;
     }
 }
