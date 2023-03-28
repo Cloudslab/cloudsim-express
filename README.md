@@ -1,4 +1,6 @@
-# CloudSim Express: From Code, To Script
+# CloudSim Express: Low-Code Simulations
+
+[![CloudSim Express Build](https://github.com/Cloudslab/cloudsim-express/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/Cloudslab/cloudsim-express/actions/workflows/maven.yml)
 
 CloudSim toolkit is designed to be used as a Java library. Let's take a look at how a simple CloudSim simulation
 scenario take
