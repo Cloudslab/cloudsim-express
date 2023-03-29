@@ -24,11 +24,24 @@ import org.cloudbus.cloudsim.Vm;
 import java.util.List;
 
 /**
- * This interface defines a workload generator capable of managing a workload.
+ * The CloudSimWorkloadGenerator defines a generator to provide workload for CloudSim. The cloudlets (i.e.,
+ * representation of tasks in CloudSim), and the associated VMs that executes the providing tasks can be obtained via
+ * this generator.
  */
 public interface CloudSimWorkloadGenerator {
 
+    /**
+     * Returns the {@link Cloudlet} list.
+     *
+     * @return The list of Cloudlets.
+     */
     List<Cloudlet> getCloudletsList();
 
+    /**
+     * Returns the VM list corresponds to the providing Cloudlets.
+     *
+     * @param brokerId Id of the broker that handles providing workload. // TODO: 29/3/23 This needs to be moved to CloudSim itself.
+     * @return The list of VMs.
+     */
     List<Vm> getVmList(int brokerId);
 }
