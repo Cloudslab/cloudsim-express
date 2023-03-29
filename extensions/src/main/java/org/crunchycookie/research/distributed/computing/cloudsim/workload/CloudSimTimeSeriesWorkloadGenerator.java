@@ -20,10 +20,28 @@ package org.crunchycookie.research.distributed.computing.cloudsim.workload;
 
 import org.crunchycookie.research.distributed.computing.cloudsim.workload.impl.helper.Workload;
 
-// TODO: 2022-05-09 Add proper support from the framework for time series.
+/**
+ * This interface defines a {@link CloudSimWorkloadGenerator} that provides time series workloads. The main purpose
+ * is to serve dynamic workload across the simulation time. In a multi-region cloud deployment, identifying the region
+ * might also benefit in determining location-aware workload submission. This interface provides APIs to support that.
+ */
 public interface CloudSimTimeSeriesWorkloadGenerator extends CloudSimWorkloadGenerator {
 
-    Workload getNext(double currentSimulationTime, String zone);
+    /**
+     * Returns the next available workload.
+     *
+     * @param time   The current simulation time.
+     * @param region The identifier of the region.
+     * @return The next workload.
+     */
+    Workload getNext(double time, String region);
 
-    double getNextSubmissionTime(double currentSimulationTime, String zone);
+    /**
+     * Returns the next workload submission time.
+     *
+     * @param time The current simulation time.
+     * @param region The identifier of the region.
+     * @return The time that the next workload will be submitted.
+     */
+    double getNextSubmissionTime(double time, String region);
 }

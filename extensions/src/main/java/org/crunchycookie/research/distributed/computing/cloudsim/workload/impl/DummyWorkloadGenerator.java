@@ -31,9 +31,9 @@ import java.util.List;
  * Dummy workload generator demonstrates submitting workloads with Cloudsim express, by submitting hardcoded set of
  * {@link Cloudlet}s and assigning each of the {@link Cloudlet} to a hardcoded {@link Vm}.
  * <p>
- * Approach: First, create the {@link Cloudlet}s during the generator initialization based on the requirements, or
- * the data trace. This list is returned in {@link #getCloudletsList()}. Afterwards, in the {@link #getVmList(int)}
- * method, the VM list corresponds to the list of {@link Cloudlet}s must be created and returned.
+ * Approach: First, create the {@link Cloudlet}s during the generator initialization. This list is returned in
+ * {@link #getCloudletsList()}. Afterwards, in the {@link #getVmList(int)} method, the VM list corresponds to the
+ * list of {@link Cloudlet}s must be created and returned.
  * <p>
  * // TODO: 27/3/23 Due to a limitation in Vm class, setting broker id in the Vm is handled in the generator. This needs to be avoided.
  */
