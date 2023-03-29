@@ -50,7 +50,7 @@ import org.cloudbus.cloudsim.express.handler.ElementHandler;
  * 'GlobalDatacenterNetwork' (i.e. value of the 'name' attribute). Therefore, the handler corresponds to
  * 'GlobalDatacenterNetwork' component is used to initialize the ScenarioManager.
  * <p>
- * Afterwards, ScenarioManager builds the scenario through the supplied system model handler.
+ * Afterward, ScenarioManager builds the scenario through the supplied system model handler.
  *
  * @see org.cloudbus.cloudsim.express.manager.impl.DefaultScenarioManager
  */
