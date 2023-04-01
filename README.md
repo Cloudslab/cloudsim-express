@@ -1,6 +1,126 @@
-# CloudSim Express: Low-Code Simulations
+# CloudSim Express: Low-Code Simulation Framework for CloudSim
+
+---
 
 [![CloudSim Express Build](https://github.com/Cloudslab/cloudsim-express/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/Cloudslab/cloudsim-express/actions/workflows/maven.yml)
+
+CloudSim Express is a low-code framework to implement, deploy, and share CloudSim simulations.
+- **Zero-Code in Designing**: Design the simulation system model using a human-readable script.
+- **Low-Code in Implementing**: Focus only for the customization code, rather worrying about integration code with the scenario.
+- **Zero-Code in Deploying**: Deploy using a CLI tool
+- **Zero-Code in Sharing**: Explain your simulation with a Human-readable script, or accelerate your work by modifying 
+an existing human-readable script
+
+Keen to try? Let's seehow CloudSim Express can make your life much easier.
+
+### Writing a simulation: _CloudSim_ vs _CloudSim Express_
+
+A typical Cloud simulation contains following components.
+
+- The cloud infrastructure (i.e., Host count, processing elements count, etc)
+- Workload for the Cloud Infrastructure
+
+#### CloudSim Implementation
+
+1. Create a new Java project, and configure CloudSim as a dependency.
+2. Define the cloud infrastructure by writing Java code.
+```java
+// Import libraries
+import org.cloudbus.cloudsim.Cloudlet;
+import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
+import org.cloudbus.cloudsim.Datacenter;
+...
+
+// Initialize the toolkit
+int num_user=1;   // number of cloud users
+Calendar calendar=Calendar.getInstance();
+boolean trace_flag=false;  // mean trace events
+
+CloudSim.init(num_user,calendar,trace_flag);
+...
+```
+3. Write the Java code to introduce the workload, and associated VMs.
+```java
+...
+int id = 0;
+long length = 400000;
+long fileSize = 300;
+long outputSize = 300;
+UtilizationModel utilizationModel = new UtilizationModelFull();
+
+Cloudlet cloudlet = new Cloudlet(id, length, pesNumber, fileSize, 
+                            outputSize, utilizationModel, utilizationModel, 
+                            utilizationModel);
+cloudlet.setUserId(brokerId);
+cloudlet.setVmId(vmid);
+...
+```
+4. Build the project, and execute.
+```text
+...
+Starting CloudSimExample1...
+Initialising...
+Starting CloudSim version 3.0
+Datacenter_0 is starting...
+Broker is starting...
+Entities started.
+0.0: Broker: Cloud Resource List received with 1 resource(s)
+0.0: Broker: Trying to Create VM #0 in Datacenter_0
+...
+```
+
+#### CloudSim Express Implementation
+
+1. Download the CloudSim Express tool.
+2. Define cloud infrastructure in a human-readable script.
+```yaml
+...
+Zone: &Zone
+  name: "default zone"
+  datacenter: *Datacenter
+  broker:
+    variant:
+      className: "org.cloudbus.cloudsim.DatacenterBroker"
+    name: "RegionalBroker"
+  workloadGenerator:
+    variant:
+      className: "org.crunchycookie.research.distributed.computing.cloudsim.workload.impl.DummyWorkloadGenerator"
+GlobalDatacenterNetwork:
+  zoneCount: 1
+  interZoneNetworkDescriptionFilePath: "./sample-data/aws-geo-distributed-datacenter-inter-network-data.csv"
+  zones:
+    - <<: *Zone
+      name: "REGIONAL_ZONE_VIRGINIA"
+...
+```
+3. Write the custom Java code of workload submission separately, build that as a jar, and copy it to the CloudSim Express tool.
+```java
+...
+public class DummyWorkloadGenerator implements CloudSimWorkloadGenerator {
+
+    public static final int TASK_COUNT = 100;
+    private final List<Cloudlet> cloudletList;
+
+    public DummyWorkloadGenerator() {
+
+        cloudletList = new ArrayList<>();
+...
+```
+5. Execute the simulation via a CLI command.
+```text
+...
+$ java -jar simulator.jar configs.properties 
+2023-04-02 01:58:46,522 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Initializing the Low-code simulator...
+2023-04-02 01:58:46,526 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Using Extension Resolver: class org.cloudbus.cloudsim.express.resolver.impl.JARExtensionsResolver
+2023-04-02 01:58:46,650 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Using Environment Resolver: class org.cloudbus.cloudsim.express.resolver.impl.YAMLEnvironmentResolver
+2023-04-02 01:58:46,650 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Using Simulation Handler: class org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultGlobalDatacenterNetworkHandler
+2023-04-02 01:58:46,651 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Using Scenario Manager: class org.cloudbus.cloudsim.express.manager.impl.DefaultScenarioManager
+Initialising...
+...
+```
+
+
+
 
 CloudSim toolkit is designed to be used as a Java library. Let's take a look at how a simple CloudSim simulation
 scenario take
