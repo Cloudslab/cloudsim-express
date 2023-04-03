@@ -30,6 +30,8 @@ The rest of this document explore CloudSim Express in-details.
 - [Releasing CloudSimExpress](#releasing-cloudsimexpress)
 - [Contributing](#contributing)
 
+The example usages of CloudSim Express is available in [CloudSim Express - User Guide](docs%2Findex.md).
+
 ### Why did we implement CloudSim Express?
 
 ---
