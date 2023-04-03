@@ -80,7 +80,7 @@ public class DefaultProcessingElementHandler extends BaseElementHandler {
 
         // A processing element itself cannot be simulated.
         throw new CloudSimExpressRuntimeException(ELEMENT_NOT_AWARE_OF_SIMULATION,
-                "Cannot simulate a Processing Element3. Please use a higher level element to handle this scenario");
+                "Cannot simulate a Processing Element. Please use a higher level element to handle this scenario");
     }
 
     @Override

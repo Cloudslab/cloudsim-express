@@ -1,0 +1,78 @@
+# The component type, and a reference (We will reuse this reference later)
+ProcessingElement: &ProcessingElement
+  variant:
+    className: "org.cloudbus.cloudsim.Pe" # A processing element is an extension. We use default class.
+  id: -1 # -1 is a reserved value, means auto increment id.
+  processingElementProvisioner:
+    variant:
+      className: "org.cloudbus.cloudsim.provisioners.PeProvisionerSimple" # Again, similar extension. Default class is used.
+    mips: 2660 # mips value of the processing element.
+
+# The component type, and a reference (We will reuse this reference later)
+ProcessingElementList: &ProcessingElementList
+  - <<: *ProcessingElement # Notice how we use the previously declared ProcessingElement reference.
+    variant: # In YAML, attributes can be overridden. We use that to indicate that we need 5 copies of the same processing element.
+      className: "org.cloudbus.cloudsim.Pe"
+      copies: 5
+
+      # The component type, and a reference (We will reuse this reference later)
+Host: &Host
+  variant:
+    className: "org.cloudbus.cloudsim.Host"
+    copies: 1
+  id: -1 # -1 is a reserved value, means auto increment id.
+  ramProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.RamProvisionerSimple"
+    extensionProperties:
+      - key: "ram"
+        value: "515639"
+  bwProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.BwProvisionerSimple"
+    extensionProperties:
+      - key: "bw"
+        value: "100000000"
+  vmScheduler:
+    className: "org.cloudbus.cloudsim.VmSchedulerTimeShared"
+  storage: 1000000
+  processingElementList: *ProcessingElementList  # Notice how we use the previously declared ProcessingElementList reference.
+
+HostList: &HostList
+  - <<: *Host
+    variant:
+      className: "org.cloudbus.cloudsim.Host"
+      copies: 10
+
+Characteristics: &Characteristics
+  arch: "x86"
+  os: "Linux"
+  vmm: "Xen"
+  timeZone: 10.0
+  cost: 3.0
+  costPerMemory: 0.05
+  costPerStorage: 0.01
+  costPerBandwidth: 0.0
+  hostList: *HostList
+
+Datacenter: &Datacenter
+  variant:
+    className: "org.cloudbus.cloudsim.Datacenter"
+  characteristics: *Characteristics
+  vmAllocationPolicy:
+    className: "org.cloudbus.cloudsim.VmAllocationPolicySimple"
+  storage: ""
+  schedulingInterval: 0
+  name: "regional-datacenter"
+
+Zone: &Zone
+  name: "default zone"
+  datacenter: *Datacenter
+  broker:
+    variant:
+      className: "org.cloudbus.cloudsim.DatacenterBroker"
+    name: "RegionalBroker"
+  workloadGenerator:
+    variant:
+      className: "org.crunchycookie.research.distributed.computing.cloudsim.workload.impl.DummyWorkloadGenerator"
+
+SimulationSystemModel:
+  name: 'Zone'
