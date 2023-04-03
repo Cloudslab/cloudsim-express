@@ -29,7 +29,10 @@ The rest of this document explore CloudSim Express in-details.
 - [Inner Workings of CloudSim Express](#inner-workings-of-cloudsim-express)
 - [Releasing CloudSimExpress](#releasing-cloudsimexpress)
 - [Contributing](#contributing)
+
 ### Why did we implement CloudSim Express?
+
+---
 
 We observed that even though the CloudSim is a powerful tool used extensively by the research community, its development 
 life-cycle is often a chaos. This is primarily because it's a Java library, and a standard development framework
@@ -53,6 +56,8 @@ writing extensions, and a simplified deployment approach. The script-based appro
 implementations. In the cases of simple examples, it completely eliminates the need to implement Java code. 
 
 ### Comparison of Simulation Life cycles: _CloudSim_ vs _CloudSim Express_
+
+---
 
 A typical CloudSim simulation life cycle involves following steps.
 
@@ -147,6 +152,8 @@ Initialising...
 ```
 
 ### Introduction to Scripted Simulations
+
+---
 
 At the heart of CloudSim Express lies the simulation script, which describes the model of the simulation system. In which 
 a system model is built ground-up using re-usable components as building blocks, via a human-readable scripting language.
@@ -249,7 +256,7 @@ In this case, the developer needs to follow the approach below.
 #### Scripting with Re-usable Components
 
 In CloudSim Express, the re-usable components are used to write the system model of the simulation. For example, a 
-cloud availability zone can be made up with a datacenter having 20 hosts. This can be written in YAML in the following
+cloud availability zone can be made up with a datacenter having 10 hosts. This can be written in YAML in the following
 manner.
 ```yaml
 ...
@@ -319,6 +326,8 @@ SimulationSystemModel:
 
 ### Writing Extensions
 
+---
+
 We introduce a standard approach to write extensions via system model YAML file using the keyword, `variant`. It is an attribute of 
 a re-usable component. For example, a datacenter is an extension point. An extension of a datacenter is identified by
 its class name. Therefore in the system model script, a datacenter can have the attribute `variant`. In the example below,
@@ -368,6 +377,8 @@ runtime, they are loaded into the JVM and looked-up using the class name defined
 
 ### Deploying CloudSim Express
 
+---
+
 Once this project is built, the CloudSim Express tool is released into the `/release-artifacts` folder as a zipped file.
 Once unzipped, the tool has the following file structure.
 ```text
@@ -398,6 +409,8 @@ jar and configuring the system model script file.
 
 ### Inner Workings of CloudSim Express
 
+---
+
 ![CloudSimExpress System Architecture](low-code-simulation-system-architecture.svg)
 
 - **Environment Resolver**: Process the system model script file into PoJo objects, and assign a handler to proceed.
@@ -412,9 +425,13 @@ default component to the extended version by modifying the `configs.properties` 
 
 ### Releasing CloudSimExpress
 
+---
+
 Once built, the `/release-artifacts` folder contains the artifacts.
 
 ### Contributing
+
+---
 
 - Open a GitHub issue and clearly describe the issue/feature-request.
 - Fork the project, implement and test, and create a pull request.
