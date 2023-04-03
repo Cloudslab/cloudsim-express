@@ -4,21 +4,61 @@
 
 [![CloudSim Express Build](https://github.com/Cloudslab/cloudsim-express/actions/workflows/maven.yml/badge.svg?branch=main)](https://github.com/Cloudslab/cloudsim-express/actions/workflows/maven.yml)
 
-CloudSim Express is a low-code framework to implement, deploy, and share CloudSim simulations.
-- **Zero-Code in Designing**: Design the simulation system model using a human-readable script.
-- **Low-Code in Implementing**: Focus only for the customization code, rather worrying about integration code with the scenario.
-- **Zero-Code in Deploying**: Deploy using a CLI tool
-- **Zero-Code in Sharing**: Explain your simulation with a Human-readable script, or accelerate your work by modifying 
-an existing human-readable script
+CloudSim Express is a low-code framework to implement, deploy, and share CloudSim simulations. 
+It takes a human-friendly scripting approach to boost the productivity of CloudSim simulation life-cycle. 
+- **Low-Code Simulation Designs**
+  - Design simulations via a human-readable script
+- **Simplified Extensions**
+  - Standardization of writing custom extensions
+  - Improved maintainability
+  - Less boilerplate code
+- **Deploy as a tool**
+  - Human-readable script to update simulation scenario, and one-liner execution
+  - Isolation of extensions for simplified implementations, and deployments
+  - Implement locally, and deploy remotely
+- **Accelerated Idea-to-implementation**
+  - Re-use human-readable simulation designs and isolated custom extensions
+  - Zero-code transferring from existing simulations
 
-Keen to try? Let's seehow CloudSim Express can make your life much easier.
+The rest of this document explore CloudSim Express in-details.
+- [Why did we implement CloudSim Express?](#why-did-we-implement-cloudsim-express)
+- [Simulation Life Cycle Comparison: CloudSim vs CloudSim Express](#comparison-of-simulation-life-cycles-cloudsim-vs-cloudsim-express)
+- [Introduction to Scripted Simulations](#introduction-to-scripted-simulation)
+- [Writing Extensions](#writing-extensions)
+- [Deploying CloudSim Express](#deploying-cloudsim-express)
+- [Inner Workings of CloudSim Express](#inner-workings-of-cloudsim-express)
+- [Releasing CloudSimExpress](#releasing-cloudsimexpress)
+- [Contributing](#contributing)
+### Why did we implement CloudSim Express?
 
-### Writing a simulation: _CloudSim_ vs _CloudSim Express_
+We observed that even though the CloudSim is a powerful tool used extensively by the research community, its development 
+life-cycle is often a chaos. This is primarily because it's a Java library, and a standard development framework
+is not available. Therefore, researchers tend to use their own implementation approaches, which then lead to 
+implementations that are practically impossible to maintain. Due to that, any spin-off research work are not able to 
+re-use already available implementations as a starting point, rather re-implementing most of the code.
 
-A typical Cloud simulation contains following components.
+On the other hand, modern simulations quite often involves computationally heavy, 
+large scale simulations. For example, the Azure public VM traces dataset v2 
+is 235 GB large and contain ~2.6M VMs with 1.9B utilization readings. In such simulations, researchers offload executions
+into a high performance server via a cloud service. There is not a standard way available to implement CloudSim simulations in a 
+modularized manner to address such scenarios.
 
-- The cloud infrastructure (i.e., Host count, processing elements count, etc)
-- Workload for the Cloud Infrastructure
+Lastly, we noticed that CloudSim simulations requires quite-a-bit of expertise in implementing Java 
+projects. This drastically increases the time that is required to implement a simulation, and even applies to the simple
+examples. We think this is unfair for the research community, especially for a new user.
+
+Focusing on these drawbacks, we are implementing CloudSim Express to revamp the entire simulation life-cycle of CloudSim.
+CloudSim Express introduces a human-readable scripting approach to define simulation scenarios, a standard way of 
+writing extensions, and a simplified deployment approach. The script-based approach significantly reduces code-based 
+implementations. In the cases of simple examples, it completely eliminates the need to implement Java code. 
+
+### Comparison of Simulation Life cycles: _CloudSim_ vs _CloudSim Express_
+
+A typical CloudSim simulation life cycle involves following steps.
+
+- Designing cloud infrastructure (i.e., Host count, processing elements count, etc).
+- Writing extensions to simulate a specific simulation scenario. In this comparison, we implement a custom workload 
+submission component.
 
 #### CloudSim Implementation
 
@@ -34,12 +74,9 @@ import org.cloudbus.cloudsim.Datacenter;
 // Initialize the toolkit
 int num_user=1;   // number of cloud users
 Calendar calendar=Calendar.getInstance();
-boolean trace_flag=false;  // mean trace events
-
-CloudSim.init(num_user,calendar,trace_flag);
 ...
 ```
-3. Write the Java code to introduce the workload, and associated VMs.
+3. Implement extensions in the same project by writing java code.
 ```java
 ...
 int id = 0;
@@ -47,12 +84,6 @@ long length = 400000;
 long fileSize = 300;
 long outputSize = 300;
 UtilizationModel utilizationModel = new UtilizationModelFull();
-
-Cloudlet cloudlet = new Cloudlet(id, length, pesNumber, fileSize, 
-                            outputSize, utilizationModel, utilizationModel, 
-                            utilizationModel);
-cloudlet.setUserId(brokerId);
-cloudlet.setVmId(vmid);
 ...
 ```
 4. Build the project, and execute.
@@ -62,10 +93,6 @@ Starting CloudSimExample1...
 Initialising...
 Starting CloudSim version 3.0
 Datacenter_0 is starting...
-Broker is starting...
-Entities started.
-0.0: Broker: Cloud Resource List received with 1 resource(s)
-0.0: Broker: Trying to Create VM #0 in Datacenter_0
 ...
 ```
 
@@ -93,7 +120,7 @@ GlobalDatacenterNetwork:
       name: "REGIONAL_ZONE_VIRGINIA"
 ...
 ```
-3. Write the custom Java code of workload submission separately, build that as a jar, and copy it to the CloudSim Express tool.
+3. Implement extensions independently, and package as jar files. Then copy the jar files into the CloudSim Express tool.
 ```java
 ...
 public class DummyWorkloadGenerator implements CloudSimWorkloadGenerator {
@@ -109,7 +136,7 @@ public class DummyWorkloadGenerator implements CloudSimWorkloadGenerator {
 5. Execute the simulation via a CLI command.
 ```text
 ...
-$ java -jar simulator.jar configs.properties 
+$ sh cloudsim-express.sh
 2023-04-02 01:58:46,522 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Initializing the Low-code simulator...
 2023-04-02 01:58:46,526 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Using Extension Resolver: class org.cloudbus.cloudsim.express.resolver.impl.JARExtensionsResolver
 2023-04-02 01:58:46,650 [main] INFO  org.cloudbus.cloudsim.express.simulator.impl.DefaultCloudSimExpressSimulator - Using Environment Resolver: class org.cloudbus.cloudsim.express.resolver.impl.YAMLEnvironmentResolver
@@ -119,66 +146,137 @@ Initialising...
 ...
 ```
 
+### Introduction to Scripted Simulations
 
+At the heart of CloudSim Express lies the simulation script, which describes the model of the simulation system. In which 
+a system model is built ground-up using re-usable components as building blocks, via a human-readable scripting language.
 
+We opted for YAML as the human-readable scripting language, which is extensively utilized in various applications, 
+from defining APIs to maintaining configuration files. As a result, it is a familiar sight for CloudSim users.
 
-CloudSim toolkit is designed to be used as a Java library. Let's take a look at how a simple CloudSim simulation
-scenario take
-place, from the perspective of the user.
+#### Re-usable components
 
-1. Create a new project, and integrate CloudSim as a dependency.
-    - If a Maven is used for the dependency management, CloudSim project needs to be built and the corresponding Jar has
-      to be installed in the local Maven repository.
-    - If an IDE is used, then the similar CloudSim Jar needs to be configured for the IDE.
-2. Import corresponding libraries in the code, initialize the toolkit, and write the simulation scenario in Java.
+The CloudSim Express currently offers following re-usable components. 
+- **ProcessingElement**
+- **ProcessingElementProvisioner**
+- **Host**
+- **Datacenter**
+- **Broker**
+- **Zone**
+- **GlobalDatacenterNetwork**
 
-```java
-// Import libraries
-import org.cloudbus.cloudsim.Cloudlet;
-import org.cloudbus.cloudsim.CloudletSchedulerTimeShared;
-import org.cloudbus.cloudsim.Datacenter;
-...
+Our goal is to cover most of the standard cloud infrastructure. However, these components may not be sufficient for a 
+certain simulation. For which we invite the community to contribute to the project using our standard approach of implementing
+such components. This approach is discussed in the following sections.
+- [Schematics of re-usable components](#schematics-of-re-usable-components)
+- [Usage of re-usable components](#usage-of-re-usable-components)
+- [How does a re-usable component convert scripted object, into the CloudSim implementation?](#how-does-a-re-usable-component-convert-scripted-object-into-the-cloudsim-implementation)
+- [Introducing a new re-usable component](#introducing-a-new-re-usable-component)
 
-// Initialize the toolkit
-int num_user=1;   // number of cloud users
-Calendar calendar=Calendar.getInstance();
-boolean trace_flag=false;  // mean trace events
+##### _Schematics of re-usable components_
 
-CloudSim.init(num_user,calendar,trace_flag);
-
-// Simulation scenario
-String arch="x86";      // system architecture
-String os="Linux";          // operating system
-String vmm="Xen";
-double time_zone=10.0;         // time zone this resource located
-double cost=3.0;              // the cost of using processing in this resource
-double costPerMem=0.05;       // the cost of using memory in this resource
-...
+We use a separate YAML script to define schematics of re-usable components, which is the
+[simulation-elements.yaml](core/src/main/resources/simulation-elements.yaml) file. Each component is defined
+as an object in YAML with attributes. For example, the _Host_ object schematics is as follows.
+```yaml
+Host:
+  type: object
+  properties:
+    variant:
+      $ref: '#/components/schemas/Extension'
+    id:
+      type: integer
+    ramProvisioner:
+      $ref: '#/components/schemas/Extension'
+    bwProvisioner:
+      $ref: '#/components/schemas/Extension'
+    storage:
+      type: integer
+    processingElementList:
+      type: array
+      items:
+        $ref: '#/components/schemas/ProcessingElement'
+    vmScheduler:
+      $ref: '#/components/schemas/Extension'
 ```
 
-3. Finally, the project is built, and the simulation is executed.
+##### _Usage of re-usable components_
 
-## Development Challenges
-
-1. Difficult learning curve
-    - Moderate knowledge in Java language, and its dependency management is mandatory
-2. Boilerplate coding
-    - In most scenarios, the initial system design and the toolkit initiation is common. Researchers spent time on
-      implementing the same code snippets
-3. Re-usability of simulation scenarios
-    - In most cases, researchers implement their own ways of implementing the simulation scenarios. This makes
-      re-usability of CloudSim scenarios extremely difficult
-    - Most simulation scenarios share common components, with different policies. Current way of writing simulation do
-      not provide an easier approach to share the common scenarios
-
-## CloudSimExpress: A Low-Code Approach
-
-Let's take a look at how CloudSimExpress simulation scenario take place, from the perspective of the user.
-
-1. Design the simulation scenario in a human-readable script (YAML file).
+Components defined with the [simulation-elements.yaml](core/src/main/resources/simulation-elements.yaml) is
+readily available to be used by the CloudSim Express tool. For example, the same _Host_ component is now used
+to define a specific host instance in the system-model script file of CloudSim Express.
 
 ```yaml
+Host: &Host
+  variant:
+    className: "org.cloudbus.cloudsim.Host"
+    copies: 1
+  id: -1
+  ramProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.RamProvisionerSimple"
+    extensionProperties:
+      - key: "ram"
+        value: "515639"
+  bwProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.BwProvisionerSimple"
+    extensionProperties:
+      - key: "bw"
+        value: "100000000"
+  vmScheduler:
+    className: "org.cloudbus.cloudsim.VmSchedulerTimeShared"
+  storage: 1000000
+  processingElementList: *ProcessingElementList
+```
+
+##### _How does a re-usable component convert scripted object, into the CloudSim implementation?_
+
+During the project build, the schematics in the [simulation-elements.yaml](core/src/main/resources/simulation-elements.yaml)
+file are converted to Plain-old-java-objects (PoJo). Then, a specific handler extending [Base Element Handler](core/src/main/java/org/cloudbus/cloudsim/express/handler/impl/BaseElementHandler.java)
+class is written with necessary logic to covert scripted object information into a CloudSim simulation. During
+runtime, the corresponding handler is selected by the tool to process all scripted objects.
+
+##### _Introducing a new re-usable component_
+
+In this case, the developer needs to follow the approach below.
+
+1. Define the schematic in the [simulation-elements.yaml](core/src/main/resources/simulation-elements.yaml) file.
+2. Build the project to generate the corresponding PoJo (this is automatically handled via OpenAPI 3.0 libraries).
+3. Write a new element handler for the component by extending the [Base Element Handler](core/src/main/java/org/cloudbus/cloudsim/express/handler/impl/BaseElementHandler.java).
+4. Add the new handler to the end of the priority list in [cloudsim-express-configs.properties](core%2Fsrc%2Fmain%2Fresources%2Fcloudsim-express-configs.properties) file.
+5. Build the project again to obtain the updated CloudSim Express tool. Afterward, the new component can be used in the simulation system model script.
+
+
+#### Scripting with Re-usable Components
+
+In CloudSim Express, the re-usable components are used to write the system model of the simulation. For example, a 
+cloud availability zone can be made up with a datacenter having 20 hosts. This can be written in YAML in the following
+manner.
+```yaml
 ...
+Host: &Host
+  variant:
+    className: "org.cloudbus.cloudsim.Host"
+    copies: 1
+  id: -1
+  ramProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.RamProvisionerSimple"
+    extensionProperties:
+      - key: "ram"
+        value: "515639"
+  bwProvisioner:
+    className: "org.cloudbus.cloudsim.provisioners.BwProvisionerSimple"
+    extensionProperties:
+      - key: "bw"
+        value: "100000000"
+  vmScheduler:
+    className: "org.cloudbus.cloudsim.VmSchedulerTimeShared"
+  storage: 1000000
+  processingElementList: *ProcessingElementList
+HostList: &HostList
+  - <<: *Host
+    variant:
+      className: "org.cloudbus.cloudsim.Host"
+      copies: 10
 Datacenter: &Datacenter
   variant:
     className: "org.cloudbus.cloudsim.Datacenter"
@@ -205,124 +303,122 @@ Zone: &Zone
           value: "true"
         - key: "dataFolder"
           value: "../external-dependencies/data/workload/bitbrain-dataset/fastStorage"
-GlobalDatacenterNetwork:
-  zoneCount: 1
-  interZoneNetworkDescriptionFilePath: "./sample-data/aws-geo-distributed-datacenter-inter-network-data.csv"
-  zones:
-    - <<: *Zone
-      name: "REGIONAL_ZONE_VIRGINIA"
 ...
 ```
 
-2. If needed, write Java code for only the extensions that are specific to the researcher's task.
-3. Copy aforementioned extensions Jars to CloudSimExpress tool, alongside with the simulation design YAML file.
-4. Configure `cloudsim-express-configs.properties` file with the root element of the scenario (root element in the YAML
-   file)
-5. Execute the tool (execute the JAR file).
+Notice how the system model is built from ground up, each component wrapping another.
+The top-most component in this situation is the `Zone`. Once we have that, we use a reserved 
+component called `SimulationSystemModel` to let the CloudSim Express to know that which component defines the 
+simulation system model.
+```yaml
+...
+SimulationSystemModel:
+  name: 'Zone'
+...
+```
 
-## Benefits
+### Writing Extensions
 
-1. Difficult learning curve
-    - Zero coding knowledge is required to run simulations with re-usable components
-2. Boilerplate coding
-    - Simulation description covers common components
-    - Researcher only write their specific CloudSim extensions
-3. Re-usability of simulation scenarios
-    - The simulation design YAML file with corresponding JARs are easily sharable
+We introduce a standard approach to write extensions via system model YAML file using the keyword, `variant`. It is an attribute of 
+a re-usable component. For example, a datacenter is an extension point. An extension of a datacenter is identified by
+its class name. Therefore in the system model script, a datacenter can have the attribute `variant`. In the example below,
+we use the default datacenter class `org.cloudbus.cloudsim.Datacenter`.
 
-## Does CloudSimExpress support every possible simulation scenarios via the script?
+```yaml
+...
+Datacenter: &Datacenter
+  variant:
+    className: "org.cloudbus.cloudsim.Datacenter"
+    extensionProperties:
+      - key: "sampleProperty"
+      - value: "11"
+  characteristics: *Characteristics
+  vmAllocationPolicy:
+    className: "org.cloudbus.cloudsim.VmAllocationPolicySimple"
+  storage: ""
+  schedulingInterval: 0
+  name: "regional-datacenter"
+...
+```
 
-Simply put, no. But the moment a specific scenario is written in the 'CloudSimExpress manner', that
-scenario can be scripted and re-used.
+The schematic of the `variant` attribute is defined with the `Extension` component in [simulation-elements.yaml](core%2Fsrc%2Fmain%2Fresources%2Fsimulation-elements.yaml).
+```yaml
+Extension:
+  type: object
+  properties:
+    className:
+      type: string
+    copies:
+      type: integer
+    extensionProperties:
+      type: array
+      items:
+        $ref: '#/components/schemas/Property'
+```
 
-## Writing a scenario for CloudSimExpress
+As observed, any number of custom properties can be supplied to an extension as key, value pairs. This allows 
+managing custom properties too, via the system model script file.
 
-CloudSimExpress follows a modularized simulation approach. A large simulation scenario consists of
-smaller set of components. Each such component may be decomposed into even smaller components. Let's take a
-look at writing a scenario with CloudSimExpress.
+In order to consume the defined properties, the researcher must implement the interface [CloudSimExpressExtension.java](core%2Fsrc%2Fmain%2Fjava%2Forg%2Fcloudbus%2Fcloudsim%2Fexpress%2Fresolver%2FCloudSimExpressExtension.java).
+For the previous example, if the researcher wants to use a custom datacenter class, then that class must implement 
+the above-mentioned interface, which provides APIs to consume the properties.
 
-### Break down the simulation into components
+The extensions are packed as jars and copied into the `extensions` folder of the CloudSim Express tool. During the
+runtime, they are loaded into the JVM and looked-up using the class name defined in the script.
 
-Firstly, break down the simulation into smaller components. For example, a global datacenter network is consists of
-multiple zones. Each zone has a broker, and a datacenter. Each datacenter has hosts.
+### Deploying CloudSim Express
 
-### Generate YAML objects for the components
+Once this project is built, the CloudSim Express tool is released into the `/release-artifacts` folder as a zipped file.
+Once unzipped, the tool has the following file structure.
+```text
+├── cloudsim-express.sh
+├── configs.properties
+├── extensions
+│   └── workload-generators-0.1.jar
+├── log4j2.properties
+├── logs
+│   └── cloudsim-1680488172390.log
+├── sample-data
+│   └── aws-geo-distributed-datacenter-inter-network-data.csv
+├── scenarios
+│   └── system-model.yaml
+└── simulator.jar
+```
+- `extensions` folder
+  - Copy all custom class file jars into this folder.
+- `scenarios` folder
+  - The `system-model.yaml` file is used to define the simulation system model in YAML using the re-usable components.
+- `cloudsim-express.sh` file
+  - The tool is executed alongside with this file using the command, `sh ./cloudsim-express.sh`
 
-In order to use each component in the script, YAML objects needs to be generated. For this, the researcher describe the
-components in the `<cloudsimexpress-repository>/core/src/ain/resources/simulation-elements.yaml` file. If the component
-is already available, then researcher can re-use it. After that, the CloudSimExpress respository needs to be build using
-`mvn clean install` command. This will generate the Java PoJo files for any new components.
+This root folder can be copied into any remote machine and simply executed in the same manner. Most of the 
+simulation parameter updates can be done via the system model script file, and re-run the simulation without 
+even compiling java code. Also, introduction of an extension can also be easily done by copying the extension
+jar and configuring the system model script file.
 
-### Write handlers for new components
-
-For any new component, a handler must be included. The `<cloudsimexpress-repository>/core/src/main/java/handler/impl`
-package include all existing handlers. Any new handler needs to be included in this package, and every handler extends
-the base element handler class.
-
-### Formulate the scenario in the simulation description
-
-Then researcher writes the end-to-end simulation scenario in the YAML file using the components. Then during the tool
-execution, the CloudSimExpress tool interpret scenarios using the YAML objects and the handlers and executes the
-simulation.
-
-## Isn't this too much work?
-
-The beauty of CloudSimExpress depends on the wide availability of different simulation components (i.e YAML objects
-and their handlers). Once the eco-system is matured, re-usable components are readily available in a human-readable
-script, thus writing a new scenario might just be in matter seconds using the script.
-
-## Inner workings of CloudSimExpress
+### Inner Workings of CloudSim Express
 
 ![CloudSimExpress System Architecture](low-code-simulation-system-architecture.svg)
 
-- **Environment Resolver**: Reads the simulation elements file and create an in-memory object to represent the scenario,
-  and find a suitable handler to handler that element. Handlers are user defined and injected during runtime.
-- **Extensions Resolver**: Read and create instances from injected classes during runtime.
-- **Element Handler**: Implement the scenario defined in the element with CloudSim.
-- **Scenario Manager**: Execute the simulation by calling the root element handler.
-- **Simulation manager**: Does the initial cloudsim preparation and run the simulation with the scenario manager.
+- **Environment Resolver**: Process the system model script file into PoJo objects, and assign a handler to proceed.
+- **Extensions Resolver**: Read and create instances from extension classes during runtime.
+- **Element Handler**: Convert each component from script to corresponding java implementations.
+- **Scenario Manager**: Find and executes the element handler corresponds to the root simulation scenario.
+- **Simulation manager**: Initialize CloudSim and starts executing the scenario.
 
-### How does CloudSimExpress tool work?
+Most of the components from above are extensible. To use a customized version, implement the
+corresponding class, pack as a jar, and copy into the `extensions` folder. Then change the
+default component to the extended version by modifying the `configs.properties` file.
 
-- The tool identifies a root element for each scenario. For example, a global datacenter network scenario is
-  identified with the scenario element, 'GlobalDatacenterNetwork'.
-- An element can be composed with multiple other elements. The 'GlobalDatacenterNetwork' element is composed with a list
-  of 'Zone' elements. In which, a 'Zone' element is composed with ' Datacenter', 'Broker', and 'WorkloadGenerator'
-  elements. Likewise, the scenarios can be defined in this top-down approach.
-- Each of the element is a structured data object(you can think of them as similar to popular JSON objects!). We define
-  them using the human-readable data serialization language, YAML, which is extremely easy to understand.
-- You can find the definition of these elements in the simulation-elements.yaml file. This file is written according to
-  the industry accepted standard, the Open API 3.0.
-- During compile time, all YAML elements are automatically converted to plain old java objects(also known as POJOs)
-  having the same name. For example, the 'Datacenter' YAML object converts to the class file 'Datacenter.java', and
-  becomes available in the runtime for consumption.
-- The tool introduces a new class named as 'ElementHandler' to handler elements. It also packs element handlers for many
-  default elements including 'GlobalDatacenter', 'Zone', etc. These handlers are then registered in the
-  low-code-simulator-configs.properties file as a list, according to their priority, where the earliest handler in the
-  list gets the highest priority.
+### Releasing CloudSimExpress
 
-1. During the execution, the tool reads its own configuration file, low-code-simulator-configs.properties . It locates
-   the simulation definition file, and then parse the root element into an object called the simulation element. As we
-   discussed earlier, this root element can contain many other elements, and even custom extension elements. Therefore,
-   during the parsing, the tool loads extensions by dynamically loading jars in the extension folder that the user had
-   defined in the config file. Extension loading is managed by the ExtensionsResolver module and element parsing is
-   managed by the EnvironmentResolver module.
-2. The simulation element is then passed on to the ScenarioManager module. Hereafter, this module will manage the
-   simulation element.
-3. Afterwards, the tool asks the SimulationManager module to run the simulation. The default implementation of this
-   module implements CloudSim simulation where it manages initiation and termination of CloudSim simulation. Once
-   CloudSim initiation is done, it then calls the Scenario Manager to build the scenario.
-4. Scenario Manager calls the 'handle()' method of the simulation element's handler. The simulation element perform
-   logic to build the scenario with CloudSim in a top-down approach by calling subsequent 'handle' methods of element
-   handlers for each sub-elements it contains. It is worth noting that, the user is allowed to develop their own element
-   handler jars and include them in the extension folder. The user can then override the default element handler by
-   putting the class name of their own customer element handler with high priority in the config file.
-5. By the end of the 'handle' method execution of the simulation element, simulation scenario is built with CloudSim.
-6. Once returned to the Simulation Manager, it then runs the CloudSim simulation. The CloudSim log messages are
-   forwarded to a desired log file as mentioned in the tool's configs.
-7. Upon the completion of the simulation, the tool ends its execution.
+Once built, the `/release-artifacts` folder contains the artifacts.
 
-## Releasing CloudSimExpress
+### Contributing
 
-Any changes in the code (including new additions or modifications of YAML elements, or their handlers) require
-building and releasing the CloudSimExpress tool. For this, the `perform-release.sh` shell script needs to be executed.
+- Open a GitHub issue and clearly describe the issue/feature-request.
+- Fork the project, implement and test, and create a pull request.
+- Wait until automated build passes with your PR.
+- Upon successfully PR with the automatic build, a CloudsLab organization member will merge your contribution.
+
+Please kindly refer to the project licence.
