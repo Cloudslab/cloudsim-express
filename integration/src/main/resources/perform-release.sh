@@ -50,6 +50,8 @@ cp ../../$RESOURCE_DIRECTORY/cloudsim-express-configs.properties configs.propert
 
 cp ../../$RESOURCE_DIRECTORY/log4j2.properties ./
 
+cp ../../$RESOURCE_DIRECTORY/cloudsim-express.sh ./
+
 cd ../
 
 zip -r cloudsim-express.zip $RELEASE_FOLDER
