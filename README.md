@@ -27,8 +27,11 @@ The rest of this document explore CloudSim Express in-details.
 - [Writing Extensions](#writing-extensions)
 - [Deploying CloudSim Express](#deploying-cloudsim-express)
 - [Inner Workings of CloudSim Express](#inner-workings-of-cloudsim-express)
+- [Stability](#stability)
 - [Releasing CloudSimExpress](#releasing-cloudsimexpress)
 - [Contributing](#contributing)
+
+The example usages of CloudSim Express is available in [CloudSim Express - User Guide](docs%2Findex.md).
 
 ### Why did we implement CloudSim Express?
 
@@ -423,7 +426,24 @@ Most of the components from above are extensible. To use a customized version, i
 corresponding class, pack as a jar, and copy into the `extensions` folder. Then change the
 default component to the extended version by modifying the `configs.properties` file.
 
-### Releasing CloudSimExpress
+### Stability
+
+---
+
+The current version of CloudSim Express is fairly stable, and we are proud to say that it has already
+contributed to a potential research work. However, it is not extensively tested regarding error handling.
+A misconfiguration could well run into a weird error.
+
+We would appreciate opening GitHub issues for such cases. If you are able to,
+please provide as much information as you can, to help us to tackle the issue. 
+
+You can start a remote debugging session with CloudSim Express by executing the simulation with
+`java -jar -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=*:6006 simulator.jar configs.properties` 
+command. Connect via the port 6006. This will allow you to collect
+additional information, and even to fix the issue! In that case, please
+follow the Contributing guidelines and send us a pull request.
+
+### Releasing CloudSim Express
 
 ---
 
