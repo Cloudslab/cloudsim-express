@@ -14,5 +14,5 @@ Following journey traverse through CloudSim Express simulations. Notice that the
 2. [Writing Workload Generators with CloudSim Express](examples%2Fwriting-workload-generators-example%2Fwriting-workload-generators.md)
 3. [Writing a custom VM allocation policy as an Extension of CloudSim Express](examples%2Fwriting-custom-vm-allocation-policy-example%2Fwriting-custom-vm-allocation-policy.md)
 ###### _Complexity: Advanced_
-4. Introducing a new re-usable component with CloudSim Express
+4. [Introducing a new re-usable component with CloudSim Express](examples%2Fnew-reusable-component-example%2Fintroducing-new-reusable-component.md)
 5. Extend CloudSim express platform
