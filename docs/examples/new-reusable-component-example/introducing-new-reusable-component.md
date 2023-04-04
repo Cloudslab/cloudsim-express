@@ -121,6 +121,7 @@ file to the CloudSim Express tool that we used for previous examples, and replac
      ```
 3. Register new element handlers with high priority. Open `configs.properties` file, and add both custom handlers before
 the default zone handler.
+From:
 ```properties
 # priority list is used to determine which handler to select.
 element.handler.priority.1=org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterCharacteristicsHandler
@@ -130,7 +131,7 @@ element.handler.priority.4=org.cloudbus.cloudsim.express.handler.impl.cloudsim.D
 element.handler.priority.5=org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultProcessingElementHandler
 element.handler.priority.6=org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultZoneHandler
 ```
-
+To:
 ```properties
 # priority list is used to determine which handler to select.
 element.handler.priority.1=org.cloudbus.cloudsim.express.handler.impl.cloudsim.DefaultDatacenterCharacteristicsHandler

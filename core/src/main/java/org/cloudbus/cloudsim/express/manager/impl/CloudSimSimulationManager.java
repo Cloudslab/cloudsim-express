@@ -74,7 +74,7 @@ public class CloudSimSimulationManager implements SimulationManager {
         logger.atInfo().log("CloudSim Simulation is completed");
     }
 
-    private OutputStream getOutputStreamForLogs(File simulationLogsFolder) {
+    protected OutputStream getOutputStreamForLogs(File simulationLogsFolder) {
 
         OutputStream logsOutputStream;
         try {
