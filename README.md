@@ -27,6 +27,7 @@ The rest of this document explore CloudSim Express in-details.
 - [Writing Extensions](#writing-extensions)
 - [Deploying CloudSim Express](#deploying-cloudsim-express)
 - [Inner Workings of CloudSim Express](#inner-workings-of-cloudsim-express)
+- [Stability](#stability)
 - [Releasing CloudSimExpress](#releasing-cloudsimexpress)
 - [Contributing](#contributing)
 
