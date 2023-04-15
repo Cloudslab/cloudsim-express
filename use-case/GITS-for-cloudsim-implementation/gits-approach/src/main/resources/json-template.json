@@ -1,0 +1,35 @@
+{
+  "name": "GITS template",
+  "version": "0.0.1",
+  "Objective": {
+    "name": "scheduling"
+  },
+
+  "DC": {
+    "name": "RegionalDC",
+    "DC_count": 1
+  },
+
+  "Rack": {
+    "name": "rack",
+    "HostingDC": "DC",
+    "Rack_count": 1
+  },
+
+  "Shelf": {
+    "name": "shelf",
+    "HostingRack": "rack",
+    "Shelf_count": 1
+  },
+
+  "Server": {
+    "name": "server",
+    "Resources": [
+      "CPU",
+      "RAM",
+      "Storage"
+    ],
+    "Server_count": 5,
+    "HostingShelf": "shelf"
+  }
+}
