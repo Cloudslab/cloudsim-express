@@ -26,7 +26,7 @@ import java.util.List;
  * <p>
  * It implements the custom classes to achieve the usecase.
  */
-public class ExtendedCloudSimSimulation {
+public class CustomSimulation {
 
     private static List<Cloudlet> cloudletList;
     /**
@@ -45,7 +45,7 @@ public class ExtendedCloudSimSimulation {
     }
 
     private static File getJsonTemplate() throws URISyntaxException {
-        return Paths.get(ExtendedCloudSimSimulation.class.getClassLoader()
+        return Paths.get(CustomSimulation.class.getClassLoader()
                 .getResource("json-template.json").toURI()).toFile();
     }
 
