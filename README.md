@@ -423,8 +423,7 @@ jar and configuring the system model script file.
 ### Inner Workings of CloudSim Express
 
 ---
-
-![CloudSimExpress System Architecture](low-code-simulation-system-architecture.svg)
+<img src="low-code-simulation-system-architecture.png" alt="image" width="75%" height="auto">
 
 - **Environment Resolver**: Process the system model script file into PoJo objects, and assign a handler to proceed.
 - **Extensions Resolver**: Read and create instances from extension classes during runtime.
