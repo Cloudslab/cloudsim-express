@@ -27,6 +27,7 @@ import org.apache.commons.cli.*;
 import org.cloudsimplus.core.CloudSimPlus;
 
 import java.io.FileNotFoundException;
+import java.time.Instant;
 import java.util.regex.Pattern;
 
 /**
@@ -47,6 +48,7 @@ public final class Start {
      * @param args command line arguments.
      */
     public static void main(String[] args) {
+        System.out.println("CloudSimPlus Automation: initial start epoch: " + Instant.now().toEpochMilli());
         new Start(args);
     }
 

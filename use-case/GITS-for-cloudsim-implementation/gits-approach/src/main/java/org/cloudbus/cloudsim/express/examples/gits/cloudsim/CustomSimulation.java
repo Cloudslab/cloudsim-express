@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
@@ -36,9 +37,13 @@ public class CustomSimulation {
 
     public static void main(String[] args) throws URISyntaxException, FileNotFoundException {
 
+        System.out.println("TIMER: " + Instant.now().toEpochMilli());
+
         // Obtain system model interpretation from GITS.
         File jsonTemplate = getJsonTemplate();
         Uml gitsSystemModelInformation = new GITSLibrary().getTransformedJSONInformation(jsonTemplate);
+
+        System.out.println("TIMER: " +  Instant.now().toEpochMilli());
 
         // Execute CloudSim simulation.
         runUseCase(gitsSystemModelInformation);

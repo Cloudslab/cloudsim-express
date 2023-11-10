@@ -42,6 +42,7 @@ import org.cloudsimplus.util.Log;
 import org.cloudsimplus.vms.Vm;
 import org.cloudsimplus.vms.VmSimple;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -433,6 +434,8 @@ public class CloudSimulation implements Runnable {
             broker.submitVmList(vmsToBrokerMap.get(broker));
             broker.submitCloudletList(cloudletsToBrokerMap.get(broker));
         }
+
+        System.out.println("CloudSimPlus Automation: cloudsimplus start epoch: " + Instant.now().toEpochMilli());
 
         cloudsimplus.start();
 
