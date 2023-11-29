@@ -1,14 +1,9 @@
 # CloudSim Express: Low-Code Simulation Framework for CloudSim
 
 ---
-If you use this software in your work, please cite the CloudSim Express paper (Submitted to Journal of Software: Practice and Experience ([Pre-print available at Arxiv](https://arxiv.org/abs/2311.00974))
+If you use this software in your work, please cite the CloudSim Express paper
 ```
-@misc{2311.00974,
-Author = {Tharindu B. Hewage and Shashikant Ilager and Maria A. Rodriguez and Rajkumar Buyya},
-Title = {CloudSim Express: A Novel Framework for Rapid Low Code Simulation of Cloud Computing Environments},
-Year = {2023},
-Eprint = {arXiv:2311.00974},
-}
+Hewage, TB, Ilager, S, Rodriguez, MA, Buyya, R. CloudSim express: A novel framework for rapid low code simulation of cloud computing environments. Softw Pract Exper. 2023; 1-18. doi: 10.1002/spe.3290
 ```
 ---
 
